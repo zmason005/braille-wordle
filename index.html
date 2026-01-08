@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Braille Wordle Prototype</title>
+<style>
+  body { font-family: system-ui, sans-serif; padding: 1rem; }
+  input { font-size: 2rem; width: 10ch; }
+  .board { font-size: 2.5rem; margin-top: 1rem; }
+</style>
+</head>
+<body>
+
+<h1>Braille Wordle (Prototype)</h1>
+
+<label for="guess">Enter Braille guess:</label><br>
+<input id="guess" aria-label="Braille guess" />
+
+<button onclick="submitGuess()">Submit</button>
+
+<div class="board" aria-live="polite" id="board"></div>
+
+<script>
+const WORD_LENGTH = 4;
+const MAX_GUESSES = 6;
+
+const ANSWER = [..."⠅⠝⠕⠺"].map(brailleToMask);
+
+let knownDots = Array(WORD_LENGTH).fill(0);
+let guessesRemaining = MAX_GUESSES;
+
+function brailleToMask(char) {
+  return char.charCodeAt(0) - 0x2800;
+}
+
+function maskToBraille(mask) {
+  return String.fromCharCode(0x2800 + mask);
+}
+
+function renderBoard() {
+  document.getElementById("board").textContent =
+    knownDots.map(maskToBraille).join("");
+}
+
+function submitGuess() {
+  const input = document.getElementById("guess").value;
+
+  if ([...input].length !== WORD_LENGTH) {
+    alert("Incorrect length");
+    return;
+  }
+
+  const guessMasks = [...input].map(brailleToMask);
+
+  for (let i = 0; i < WORD_LENGTH; i++) {
+    knownDots[i] |= guessMasks[i] & ANSWER[i];
+  }
+
+  guessesRemaining--;
+  renderBoard();
+
+  if (knownDots.every((m, i) => m === ANSWER[i])) {
+    alert("Solved!");
+  } else if (guessesRemaining === 0) {
+    alert("Out of guesses");
+  }
+
+  document.getElementById("guess").value = "";
+}
+
+renderBoard();
+</script>
+
+</body>
+</html>
