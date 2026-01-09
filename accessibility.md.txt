@@ -1,0 +1,55 @@
+# Accessibility Statement — Braille Wordle
+
+Braille Wordle is designed to be **natively accessible**, not visually adapted.
+
+Accessibility is a **core requirement**, not a feature.
+
+---
+
+## ♿ Accessibility Goals
+
+- Full usability without vision
+- Native support for Braille readers
+- Compatibility with assistive technologies
+- Keyboard-only operation
+
+---
+
+## 🧩 Key Accessibility Features
+
+### Braille-First Design
+- All gameplay uses Unicode Braille characters
+- Dot-level logic replaces visual color cues
+- No reliance on letters for correctness
+
+### Assistive Technology Support
+- Screen readers announce game state changes
+- Refreshable Braille displays show real Braille
+- ARIA live regions used for feedback
+
+### Input
+- Direct Unicode Braille input supported
+- No mouse required
+- Predictable focus order
+
+---
+
+## 🚧 Known Limitations (Prototype)
+
+- No tutorial yet
+- Limited word list
+- No difficulty settings
+- No alternative Braille codes (e.g., Nemeth)
+
+These are planned improvements.
+
+---
+
+## 📣 Feedback
+
+Accessibility feedback—especially from Braille readers—is highly encouraged.
+
+If something does not work as expected, please open an issue with:
+- Your assistive technology
+- Browser
+- Description of the issue
