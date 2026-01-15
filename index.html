@@ -2,33 +2,112 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Braille Wordle Prototype</title>
+<title>Braille Wordle</title>
+
 <style>
-  body { font-family: system-ui, sans-serif; padding: 1rem; }
-  input { font-size: 2rem; width: 10ch; }
-  .board { font-size: 2.5rem; margin-top: 1rem; }
+  body {
+    font-family: system-ui, sans-serif;
+    padding: 1rem;
+    line-height: 1.5;
+  }
+
+  .title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .instructions {
+    max-width: 42rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .input-row {
+    display: flex;
+    align-items: center;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .brace {
+    padding: 0 0.5rem;
+  }
+
+  input {
+    font-size: 2.5rem;
+    width: 6ch;
+    text-align: center;
+  }
+
+  button {
+    font-size: 1.2rem;
+  }
+
+  .board {
+    font-size: 2.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .status {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+  }
 </style>
 </head>
+
 <body>
 
-<h1>Braille Wordle (Prototype)</h1>
+<!-- Title: BRAILLEWORDLE in Grade II Braille -->
+<div class="title" aria-label="Braille Wordle">
+  ⠃⠗⠇⠸⠺⠇⠑
+</div>
 
-<label for="guess">Enter Braille guess:</label><br>
-<input id="guess" aria-label="Braille guess" />
+<!-- Instructions (under 100 words) -->
+<div class="instructions">
+  Enter a five-cell Braille word. Each guess reveals only the correct dots
+  in the correct positions. Correct dots remain for future guesses.
+  You must enter exactly five Unicode Braille characters.
+  Letters and visual clues are not used.
+</div>
+
+<!-- Braced input field -->
+<div class="input-row" aria-label="Five Braille cells">
+  <!-- Left brace (_<) -->
+  <span class="brace" aria-hidden="true">⠸⠣</span>
+
+  <input
+    id="guess"
+    aria-label="Five Braille cells"
+    aria-describedby="cell-help"
+    maxlength="5"
+    inputmode="text"
+    autocomplete="off"
+    autocorrect="off"
+    autocapitalize="off"
+    spellcheck="false"
+  />
+
+  <!-- Right brace (_>) -->
+  <span class="brace" aria-hidden="true">⠸⠜</span>
+</div>
+
+<div id="cell-help" class="sr-only">
+  Enter exactly five Unicode Braille characters.
+</div>
 
 <button onclick="submitGuess()">Submit</button>
 
-<div class="board" aria-live="polite" id="board"></div>
+<!-- Persistent dot display -->
+<div
+  class="board"
+  id="board"
+  aria-live="polite"
+  role="status"
+></div>
+
+<div class="status" id="status"></div>
 
 <script>
-const WORD_LENGTH = 4;
-const MAX_GUESSES = 6;
-
-const ANSWER = [..."⠅⠝⠕⠺"].map(brailleToMask);
-
-let knownDots = Array(WORD_LENGTH).fill(0);
-let guessesRemaining = MAX_GUESSES;
-
+// ---------- Braille utilities ----------
 function brailleToMask(char) {
   return char.charCodeAt(0) - 0x2800;
 }
@@ -37,37 +116,59 @@ function maskToBraille(mask) {
   return String.fromCharCode(0x2800 + mask);
 }
 
+function isUnicodeBraille(char) {
+  const code = char.charCodeAt(0);
+  return code >= 0x2800 && code <= 0x28FF;
+}
+
+// ---------- Practice word: "affect" ----------
+// ASCII Braille: a6ect
+// Unicode Braille cells (Grade II)
+const ANSWER = [..."⠁⠖⠑⠉⠞"].map(brailleToMask);
+
+// Known correct dots per position
+let knownDots = Array(5).fill(0);
+
+// ---------- Rendering ----------
 function renderBoard() {
   document.getElementById("board").textContent =
     knownDots.map(maskToBraille).join("");
 }
 
+// ---------- Submission logic ----------
 function submitGuess() {
   const input = document.getElementById("guess").value;
+  const status = document.getElementById("status");
+  const chars = [...input];
 
-  if ([...input].length !== WORD_LENGTH) {
-    alert("Incorrect length");
+  // Validation A: exactly 5 cells
+  if (chars.length !== 5) {
+    status.textContent = "Error: Enter exactly five Braille cells.";
     return;
   }
 
-  const guessMasks = [...input].map(brailleToMask);
-
-  for (let i = 0; i < WORD_LENGTH; i++) {
-    knownDots[i] |= guessMasks[i] & ANSWER[i];
+  // Validation B: Braille only
+  for (const ch of chars) {
+    if (!isUnicodeBraille(ch)) {
+      status.textContent = "Error: Only Unicode Braille characters are allowed.";
+      return;
+    }
   }
 
-  guessesRemaining--;
+  const guessMasks = chars.map(brailleToMask);
+
+  // ---------- Persistent dot logic ----------
+  for (let i = 0; i < 5; i++) {
+    const correctDots = guessMasks[i] & ANSWER[i];
+    knownDots[i] |= correctDots;
+  }
+
   renderBoard();
-
-  if (knownDots.every((m, i) => m === ANSWER[i])) {
-    alert("Solved!");
-  } else if (guessesRemaining === 0) {
-    alert("Out of guesses");
-  }
-
+  status.textContent = "Guess processed. Correct dots retained.";
   document.getElementById("guess").value = "";
 }
 
+// Initial render
 renderBoard();
 </script>
 
