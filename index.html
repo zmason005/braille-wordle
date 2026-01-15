@@ -55,8 +55,8 @@
   <h1>Braille Wordle</h1>
 
   <p class="instructions">
-    Enter a 5-cell Braille word. After each guess, correct dots will persist and
-    appear above the next guess.
+    Enter a 5-cell Braille word. After each guess, correct dots will persist
+    and appear above the next guess.
   </p>
 
   <!-- Persistent dot logic rows -->
@@ -80,16 +80,25 @@
   <div id="status" class="status" aria-live="assertive"></div>
 
   <script>
+    /**********************************************************************
+     *  CONFIGURATION
+     *********************************************************************/
+
     // Practice word: "affect" → a6ect
+    // Unicode Braille: ⠁ ⠆ ⠑ ⠉ ⠞
     const answer = Array.from("⠁⠆⠑⠉⠞");
 
-    // Persistent known dots per cell
+    // Persistent known dots per cell (bitmasks)
     let knownDots = [0, 0, 0, 0, 0];
 
     const patternsDiv = document.getElementById("patterns");
     const input = document.getElementById("guessInput");
     const status = document.getElementById("status");
     const submit = document.getElementById("submitGuess");
+
+    /**********************************************************************
+     *  BRAILLE UTILITIES
+     *********************************************************************/
 
     function isBrailleCell(ch) {
       const code = ch.codePointAt(0);
@@ -104,10 +113,30 @@
       return String.fromCodePoint(0x2800 + mask);
     }
 
+    /**
+     * Extract only *committed* Braille cells from the input.
+     *
+     * iOS + VoiceOver + Braille displays may insert:
+     *  - invisible characters
+     *  - placeholder blank Braille cells (⠿ or ⠀)
+     *  - delayed final commits
+     *
+     * We:
+     *  1. Keep only Unicode Braille
+     *  2. Drop blank-dot placeholders (dot mask === 0)
+     */
+    function getCommittedBrailleCells() {
+      return Array.from(input.value)
+        .filter(isBrailleCell)
+        .filter(ch => brailleToDots(ch) !== 0);
+    }
+
+    /**********************************************************************
+     *  GAME LOGIC
+     *********************************************************************/
+
     function submitGuess() {
-      // IMPORTANT FIX:
-      // Filter out all non-Braille characters before counting
-      const chars = Array.from(input.value).filter(isBrailleCell);
+      const chars = getCommittedBrailleCells();
 
       if (chars.length !== 5) {
         status.textContent =
@@ -137,7 +166,7 @@
 
       patternsDiv.appendChild(row);
 
-      // Move focus to newest persistent row
+      // Move focus so Braille display lands on new pattern
       row.focus();
 
       // Clear input for next guess
@@ -152,11 +181,24 @@
       }
     }
 
-    submit.addEventListener("click", submitGuess);
+    /**********************************************************************
+     *  iOS BRAILLE COMMIT FIX
+     *
+     *  Braille input on iOS is asynchronous. We must delay reading
+     *  input.value long enough for VoiceOver to finish committing
+     *  the final Braille cell.
+     *********************************************************************/
+
+    function delayedSubmit() {
+      // 50 ms has proven reliable across iOS versions
+      setTimeout(submitGuess, 50);
+    }
+
+    submit.addEventListener("click", delayedSubmit);
 
     input.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
-        submitGuess();
+        delayedSubmit();
       }
     });
   </script>
