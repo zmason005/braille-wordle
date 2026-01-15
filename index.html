@@ -1,176 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>Braille Wordle</title>
+  <meta charset="UTF-8" />
+  <title>Braille Wordle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<style>
-  body {
-    font-family: system-ui, sans-serif;
-    padding: 1rem;
-    line-height: 1.5;
-  }
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 1.5rem;
+      max-width: 600px;
+      margin: auto;
+    }
 
-  .title {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
+    h1 {
+      text-align: center;
+    }
 
-  .instructions {
-    max-width: 42rem;
-    margin-bottom: 1.5rem;
-  }
+    .instructions {
+      margin-bottom: 1.5rem;
+    }
 
-  .input-row {
-    display: flex;
-    align-items: center;
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  }
+    .pattern-row {
+      font-size: 1.5rem;
+      letter-spacing: 0.3rem;
+      margin-bottom: 0.5rem;
+    }
 
-  .brace {
-    padding: 0 0.5rem;
-  }
+    .guess-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
 
-  input {
-    font-size: 2.5rem;
-    width: 6ch;
-    text-align: center;
-  }
+    input[type="text"] {
+      font-size: 1.5rem;
+      width: 10ch;
+    }
 
-  button {
-    font-size: 1.2rem;
-  }
+    button {
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+    }
 
-  .board {
-    font-size: 2.5rem;
-    margin-top: 1.5rem;
-  }
-
-  .status {
-    margin-top: 1rem;
-    font-size: 1.2rem;
-  }
-</style>
+    .status {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+  </style>
 </head>
 
 <body>
+  <h1>Braille Wordle</h1>
 
-<!-- Title: BRAILLEWORDLE in Grade II Braille -->
-<div class="title" aria-label="Braille Wordle">
-  ⠃⠗⠇⠸⠺⠇⠑
-</div>
+  <p class="instructions">
+    Enter a 5-cell Braille word. After each guess, correct dots will persist and
+    appear above the next guess. The input clears after submission.
+  </p>
 
-<!-- Instructions (under 100 words) -->
-<div class="instructions">
-  Enter a five-cell Braille word. Each guess reveals only the correct dots
-  in the correct positions. Correct dots remain for future guesses.
-  You must enter exactly five Unicode Braille characters.
-  Letters and visual clues are not used.
-</div>
+  <!-- Container for all persistent dot rows -->
+  <div id="patterns" aria-live="polite"></div>
 
-<!-- Braced input field -->
-<div class="input-row" aria-label="Five Braille cells">
-  <!-- Left brace (_<) -->
-  <span class="brace" aria-hidden="true">⠸⠣</span>
+  <!-- Guess input -->
+  <div class="guess-row">
+    <span aria-hidden="true">{</span>
+    <input
+      id="guessInput"
+      type="text"
+      aria-label="Braille guess input"
+      autocomplete="off"
+      autocorrect="off"
+      spellcheck="false"
+    />
+    <span aria-hidden="true">}</span>
+    <button id="submitGuess">Submit</button>
+  </div>
 
-  <input
-    id="guess"
-    aria-label="Five Braille cells"
-    aria-describedby="cell-help"
-    maxlength="5"
-    inputmode="text"
-    autocomplete="off"
-    autocorrect="off"
-    autocapitalize="off"
-    spellcheck="false"
-  />
+  <div id="status" class="status" aria-live="assertive"></div>
 
-  <!-- Right brace (_>) -->
-  <span class="brace" aria-hidden="true">⠸⠜</span>
-</div>
+  <script>
+    // === Configuration ===
+    // Practice word: "affect" → a6ect
+    const answer = Array.from("⠁⠆⠑⠉⠞");
 
-<div id="cell-help" class="sr-only">
-  Enter exactly five Unicode Braille characters.
-</div>
+    // Persistent known dots per cell (bitmask)
+    let knownDots = [0, 0, 0, 0, 0];
 
-<button onclick="submitGuess()">Submit</button>
+    const patternsDiv = document.getElementById("patterns");
+    const input = document.getElementById("guessInput");
+    const status = document.getElementById("status");
+    const submit = document.getElementById("submitGuess");
 
-<!-- Persistent dot display -->
-<div
-  class="board"
-  id="board"
-  aria-live="polite"
-  role="status"
-></div>
-
-<div class="status" id="status"></div>
-
-<script>
-// ---------- Braille utilities ----------
-function brailleToMask(char) {
-  return char.charCodeAt(0) - 0x2800;
-}
-
-function maskToBraille(mask) {
-  return String.fromCharCode(0x2800 + mask);
-}
-
-function isUnicodeBraille(char) {
-  const code = char.charCodeAt(0);
-  return code >= 0x2800 && code <= 0x28FF;
-}
-
-// ---------- Practice word: "affect" ----------
-// ASCII Braille: a6ect
-// Unicode Braille cells (Grade II)
-const ANSWER = [..."⠁⠖⠑⠉⠞"].map(brailleToMask);
-
-// Known correct dots per position
-let knownDots = Array(5).fill(0);
-
-// ---------- Rendering ----------
-function renderBoard() {
-  document.getElementById("board").textContent =
-    knownDots.map(maskToBraille).join("");
-}
-
-// ---------- Submission logic ----------
-function submitGuess() {
-  const input = document.getElementById("guess").value;
-  const status = document.getElementById("status");
-  const chars = [...input];
-
-  // Validation A: exactly 5 cells
-  if (chars.length !== 5) {
-    status.textContent = "Error: Enter exactly five Braille cells.";
-    return;
-  }
-
-  // Validation B: Braille only
-  for (const ch of chars) {
-    if (!isUnicodeBraille(ch)) {
-      status.textContent = "Error: Only Unicode Braille characters are allowed.";
-      return;
+    function isBrailleCell(ch) {
+      const code = ch.codePointAt(0);
+      return code >= 0x2800 && code <= 0x28FF;
     }
-  }
 
-  const guessMasks = chars.map(brailleToMask);
+    function brailleToDots(ch) {
+      return ch.codePointAt(0) - 0x2800;
+    }
 
-  // ---------- Persistent dot logic ----------
-  for (let i = 0; i < 5; i++) {
-    const correctDots = guessMasks[i] & ANSWER[i];
-    knownDots[i] |= correctDots;
-  }
+    function dotsToBraille(mask) {
+      return String.fromCodePoint(0x2800 + mask);
+    }
 
-  renderBoard();
-  status.textContent = "Guess processed. Correct dots retained.";
-  document.getElementById("guess").value = "";
-}
+    function submitGuess() {
+      const chars = Array.from(input.value);
 
-// Initial render
-renderBoard();
-</script>
+      // Validate on submit only
+      if (chars.length !== 5 || !chars.every(isBrailleCell)) {
+        status.textContent =
+          "Please enter exactly five Braille cells.";
+        return;
+      }
 
+      let correctCells = 0;
+
+      for (let i = 0; i < 5; i++) {
+        const guessDots = brailleToDots(chars[i]);
+        const answerDots = brailleToDots(answer[i]);
+
+        const correctDots = guessDots & answerDots;
+        knownDots[i] |= correctDots;
+
+        if (chars[i] === answer[i]) {
+          correctCells++;
+        }
+      }
+
+      // Create a new persistent dot logic row
+      const row = document.createElement("div");
+      row.className = "pattern-row";
+      row.setAttribute("tabindex", "-1");
+
+      row.textContent = knownDots.map(dotsToBraille).join(" ");
+
+      patternsDiv.appendChild(row);
+
+      // Move cursor focus to the new persistent row
+      row.focus();
+
+      // Clear input for next guess
+      input.value = "";
+
+      if (correctCells === 5) {
+        status.textContent = "Well done! You solved the word.";
+        submit.disabled = true;
+        input.disabled = true;
+      } else {
+        status.textContent = "";
+      }
+    }
+
+    submit.addEventListener("click", submitGuess);
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        submitGuess();
+      }
+    });
+  </script>
 </body>
 </html>
