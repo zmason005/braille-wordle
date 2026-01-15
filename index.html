@@ -34,9 +34,15 @@
       margin-bottom: 1rem;
     }
 
-    input[type="text"] {
+    .guess-input {
+      min-width: 10ch;
       font-size: 1.5rem;
-      width: 10ch;
+      border: 1px solid #999;
+      padding: 0.25rem 0.5rem;
+    }
+
+    .guess-input:focus {
+      outline: 2px solid #0066cc;
     }
 
     button {
@@ -65,15 +71,19 @@
   <!-- Guess input -->
   <div class="guess-row">
     <span aria-hidden="true">{</span>
-    <input
+
+    <div
       id="guessInput"
-      type="text"
+      class="guess-input"
+      contenteditable="true"
+      role="textbox"
       aria-label="Braille guess input"
-      autocomplete="off"
-      autocorrect="off"
+      aria-multiline="false"
       spellcheck="false"
-    />
+    ></div>
+
     <span aria-hidden="true">}</span>
+
     <button id="submitGuess">Submit</button>
   </div>
 
@@ -81,14 +91,13 @@
 
   <script>
     /**********************************************************************
-     *  CONFIGURATION
+     * CONFIGURATION
      *********************************************************************/
 
     // Practice word: "affect" → a6ect
     // Unicode Braille: ⠁ ⠆ ⠑ ⠉ ⠞
     const answer = Array.from("⠁⠆⠑⠉⠞");
 
-    // Persistent known dots per cell (bitmasks)
     let knownDots = [0, 0, 0, 0, 0];
 
     const patternsDiv = document.getElementById("patterns");
@@ -97,7 +106,7 @@
     const submit = document.getElementById("submitGuess");
 
     /**********************************************************************
-     *  BRAILLE UTILITIES
+     * BRAILLE UTILITIES
      *********************************************************************/
 
     function isBrailleCell(ch) {
@@ -113,26 +122,14 @@
       return String.fromCodePoint(0x2800 + mask);
     }
 
-    /**
-     * Extract only *committed* Braille cells from the input.
-     *
-     * iOS + VoiceOver + Braille displays may insert:
-     *  - invisible characters
-     *  - placeholder blank Braille cells (⠿ or ⠀)
-     *  - delayed final commits
-     *
-     * We:
-     *  1. Keep only Unicode Braille
-     *  2. Drop blank-dot placeholders (dot mask === 0)
-     */
     function getCommittedBrailleCells() {
-      return Array.from(input.value)
+      return Array.from(input.textContent)
         .filter(isBrailleCell)
         .filter(ch => brailleToDots(ch) !== 0);
     }
 
     /**********************************************************************
-     *  GAME LOGIC
+     * GAME LOGIC
      *********************************************************************/
 
     function submitGuess() {
@@ -150,55 +147,39 @@
         const guessDots = brailleToDots(chars[i]);
         const answerDots = brailleToDots(answer[i]);
 
-        const correctDots = guessDots & answerDots;
-        knownDots[i] |= correctDots;
+        knownDots[i] |= (guessDots & answerDots);
 
         if (chars[i] === answer[i]) {
           correctCells++;
         }
       }
 
-      // Create persistent dot logic row
       const row = document.createElement("div");
       row.className = "pattern-row";
       row.setAttribute("tabindex", "-1");
       row.textContent = knownDots.map(dotsToBraille).join(" ");
 
       patternsDiv.appendChild(row);
-
-      // Move focus so Braille display lands on new pattern
       row.focus();
 
-      // Clear input for next guess
-      input.value = "";
+      input.textContent = "";
 
       if (correctCells === 5) {
         status.textContent = "Well done! You solved the word.";
-        input.disabled = true;
         submit.disabled = true;
+        input.setAttribute("contenteditable", "false");
       } else {
         status.textContent = "";
+        input.focus();
       }
     }
 
-    /**********************************************************************
-     *  iOS BRAILLE COMMIT FIX
-     *
-     *  Braille input on iOS is asynchronous. We must delay reading
-     *  input.value long enough for VoiceOver to finish committing
-     *  the final Braille cell.
-     *********************************************************************/
-
-    function delayedSubmit() {
-      // 50 ms has proven reliable across iOS versions
-      setTimeout(submitGuess, 50);
-    }
-
-    submit.addEventListener("click", delayedSubmit);
+    submit.addEventListener("click", submitGuess);
 
     input.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
-        delayedSubmit();
+        e.preventDefault();
+        submitGuess();
       }
     });
   </script>
