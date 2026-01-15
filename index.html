@@ -56,10 +56,10 @@
 
   <p class="instructions">
     Enter a 5-cell Braille word. After each guess, correct dots will persist and
-    appear above the next guess. The input clears after submission.
+    appear above the next guess.
   </p>
 
-  <!-- Container for all persistent dot rows -->
+  <!-- Persistent dot logic rows -->
   <div id="patterns" aria-live="polite"></div>
 
   <!-- Guess input -->
@@ -80,11 +80,10 @@
   <div id="status" class="status" aria-live="assertive"></div>
 
   <script>
-    // === Configuration ===
     // Practice word: "affect" → a6ect
     const answer = Array.from("⠁⠆⠑⠉⠞");
 
-    // Persistent known dots per cell (bitmask)
+    // Persistent known dots per cell
     let knownDots = [0, 0, 0, 0, 0];
 
     const patternsDiv = document.getElementById("patterns");
@@ -106,10 +105,11 @@
     }
 
     function submitGuess() {
-      const chars = Array.from(input.value);
+      // IMPORTANT FIX:
+      // Filter out all non-Braille characters before counting
+      const chars = Array.from(input.value).filter(isBrailleCell);
 
-      // Validate on submit only
-      if (chars.length !== 5 || !chars.every(isBrailleCell)) {
+      if (chars.length !== 5) {
         status.textContent =
           "Please enter exactly five Braille cells.";
         return;
@@ -129,16 +129,15 @@
         }
       }
 
-      // Create a new persistent dot logic row
+      // Create persistent dot logic row
       const row = document.createElement("div");
       row.className = "pattern-row";
       row.setAttribute("tabindex", "-1");
-
       row.textContent = knownDots.map(dotsToBraille).join(" ");
 
       patternsDiv.appendChild(row);
 
-      // Move cursor focus to the new persistent row
+      // Move focus to newest persistent row
       row.focus();
 
       // Clear input for next guess
@@ -146,8 +145,8 @@
 
       if (correctCells === 5) {
         status.textContent = "Well done! You solved the word.";
-        submit.disabled = true;
         input.disabled = true;
+        submit.disabled = true;
       } else {
         status.textContent = "";
       }
