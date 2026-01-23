@@ -1,72 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-
-  <!--
-    Security Note:
-    We explicitly set UTF-8 and do not allow user-controlled script injection.
-  -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>Braille Wordle (Prototype)</title>
-
-  <style>
-    body {
-      font-family: monospace;
-      padding: 1rem;
-    }
-
-    .header-row,
-    .row {
-      display: grid;
-      grid-template-columns: 6ch 6ch 6ch;
-      gap: 1ch;
-      margin-bottom: 0.25rem;
-    }
-
-    .cell {
-      white-space: pre;
-    }
-
-    input[type="text"] {
-      width: 6ch;
-      font-family: monospace;
-    }
-
-    button {
-      margin-top: 0.5rem;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Braille Wordle</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-  <h1>Braille Wordle</h1>
+    <header>
+        <h1>Braille Wordle</h1>
+    </header>
 
-  <!-- Fixed header (screen-reader friendly, not overdone) -->
-  <div class="header-row" role="row">
-    <div class="cell" role="columnheader">correct</div>
-    <div class="cell" role="columnheader">guess</div>
-    <div class="cell" role="columnheader">history</div>
-  </div>
+    <main>
+        <section id="game-container">
+            <div id="current-guess-container">
+                <label for="guess-input">Your guess:</label>
+                <input type="text" id="guess-input" autocomplete="off" aria-label="Enter your guess in ASCII Braille">
+                <button id="submit-guess">Submit</button>
+            </div>
 
-  <!-- Game rows will be inserted here -->
-  <div id="game-board"></div>
+            <div id="status-container" role="status" aria-live="polite">
+                <!-- Status messages appear here -->
+            </div>
 
-  <!-- Active guess input -->
-  <div class="row">
-    <input
-      id="guess-input"
-      type="text"
-      maxlength="5"
-      aria-label="Enter 5 character braille ascii guess"
-      autocomplete="off"
-      spellcheck="false"
-    />
-    <button id="submit-btn">Submit</button>
-  </div>
+            <div id="correct-guesses-container">
+                <h2>Correct Guesses History</h2>
+                <ul id="correct-guesses-list"></ul>
+            </div>
+        </section>
+    </main>
 
-  <!-- Script loaded last to avoid DOM timing issues -->
-  <script src="main.js"></script>
+    <script src="braille-ascii-map.json" type="application/json"></script>
+    <script src="main.js"></script>
 </body>
 </html>
