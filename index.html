@@ -1,36 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Braille Wordle</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <title>Braille Wordle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body {
+      font-family: monospace;
+    }
+
+    #game-board {
+      margin-top: 1em;
+      white-space: pre;
+    }
+
+    .row {
+      outline: none;
+    }
+
+    #status {
+      margin-top: 1em;
+    }
+
+    #guess-input {
+      width: 6ch;
+    }
+  </style>
 </head>
+
 <body>
-    <header>
-        <h1>Braille Wordle</h1>
-    </header>
+  <h1>Braille Wordle</h1>
 
-    <main>
-        <section id="game-container">
-            <div id="current-guess-container">
-                <label for="guess-input">Your guess:</label>
-                <input type="text" id="guess-input" autocomplete="off" aria-label="Enter your guess in ASCII Braille">
-                <button id="submit-guess">Submit</button>
-            </div>
+  <div id="game-board">
+    <div id="header">correct guess wr;g</div>
+  </div>
 
-            <div id="status-container" role="status" aria-live="polite">
-                <!-- Status messages appear here -->
-            </div>
+  <div
+    id="status"
+    aria-live="polite"
+    aria-atomic="true"
+  ></div>
 
-            <div id="correct-guesses-container">
-                <h2>Correct Guesses History</h2>
-                <ul id="correct-guesses-list"></ul>
-            </div>
-        </section>
-    </main>
+  <div id="controls">
+    <label for="guess-input">guess</label>
+    <input
+      id="guess-input"
+      type="text"
+      maxlength="5"
+      autocomplete="off"
+      autocapitalize="off"
+      spellcheck="false"
+    />
+    <button id="submit-btn">submit</button>
+  </div>
 
-    <script src="braille-ascii-map.json" type="application/json"></script>
-    <script src="main.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
