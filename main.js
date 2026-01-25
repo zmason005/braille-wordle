@@ -1,195 +1,180 @@
-"use strict";
+// -----------------------------
+// Configuration
+// -----------------------------
 
-/*
-  Security Note:
-  This file does not evaluate user input as code.
-  All input is length-checked and character-validated.
-*/
-
-const WORD_OF_THE_DAY = "a6ect"; // test word (ascii)
+const WORD_LENGTH = 5;
 const MAX_GUESSES = 6;
+const WORD_OF_THE_DAY = "a6ect";
 
-let asciiToDots = {};
-let dotsToAscii = {};
-
-let currentGuess = 0;
-let gameOver = false;
-
-// per-position persistent fields
-let correctDots = Array(5).fill("000000");
-let wrongDots   = Array(5).fill("000000");
-
-/* ---------------- Status Messages (ASCII Braille) ---------------- */
-
+// Status messages (ASCII for Braille)
 const STATUS = {
-  INVALID_LENGTH: 'guess m/ 2 exactly #e "*s"',
-  INVALID_CHARS: 'guess 3ta9s 9valid "*s"',
-  RECORDED: 'guess record$',
-  WIN: ',,y ,,w96',
-  LOSE: 'sorry game ov]',
-  LOCKED: 'game f9i%$ 9put lock$',
-  RELOAD: 'reload page to play ag'
+  invalidLength: 'guess m/ 2 exactly #e "*s"',
+  invalidChars: 'guess 3ta9s 9valid "*s"',
+  win: ',,y ,,w96',
+  lose: 'sorry game ov]',
+  locked: 'game f9i%$ 9put lock$',
+  reload: 'reload page to play ag'
 };
 
-function setStatus(message) {
-  document.getElementById("status").textContent = message;
-}
+// -----------------------------
+// State
+// -----------------------------
 
-/* ---------------- Mapping Loader ---------------- */
+let guessHistory = [];
+let accumulatorHistory = [
+  { correct: "-----", wrong: "-----" }
+];
 
-async function loadMapping() {
-  const response = await fetch("braille-ascii-map.json");
-  const data = await response.json();
+let gameOver = false;
 
-  asciiToDots = data;
+// -----------------------------
+// DOM
+// -----------------------------
 
-  for (const [ascii, dots] of Object.entries(data)) {
-    dotsToAscii[dots] = ascii;
-  }
-}
+const board = document.getElementById("board");
+const form = document.getElementById("guess-form");
+const input = document.getElementById("guess-input");
+const label = document.getElementById("guess-label");
+const status = document.getElementById("status");
 
-/* ---------------- Utilities ---------------- */
-
-function asciiStringToDotsArray(str) {
-  return [...str].map(ch => asciiToDots[ch] || null);
-}
-
-function dotsArrayToAsciiString(arr) {
-  return arr.map(d => dotsToAscii[d] || " ").join("");
-}
+// -----------------------------
+// Utilities
+// -----------------------------
 
 function guessLabel(index) {
-  if (index < 5) {
-    return `#${String.fromCharCode(97 + index)}`;
+  if (index === MAX_GUESSES - 1) return "f9al guess";
+  return `guess #${String.fromCharCode(97 + index)}`;
+}
+
+function padOrBlank(str) {
+  return str ? str : "     ";
+}
+
+function accumulate(prev, guess) {
+  let correct = prev.correct.split("");
+  let wrong = prev.wrong.split("");
+
+  for (let i = 0; i < WORD_LENGTH; i++) {
+    const ch = guess[i];
+    if (WORD_OF_THE_DAY[i] === ch) {
+      correct[i] = ch;
+    } else if (!WORD_OF_THE_DAY.includes(ch)) {
+      wrong[i] = ch;
+    }
   }
-  return "f9al guess";
+
+  return {
+    correct: correct.join(""),
+    wrong: wrong.join("")
+  };
 }
 
-/* ---------------- Row Formatting ---------------- */
+// -----------------------------
+// Rendering
+// -----------------------------
 
-function formatRow({ guessIndex, correct, guess, wrong }) {
-  const label = guessLabel(guessIndex);
-  return `${label} ${correct} ${guess} ${wrong}`;
+function renderBoard() {
+  // Clear all rows except header
+  board.querySelectorAll(".row:not(#header)").forEach(r => r.remove());
+
+  for (let i = 0; i <= guessHistory.length; i++) {
+    if (i > MAX_GUESSES) break;
+
+    const acc = accumulatorHistory[i];
+    const guess = guessHistory[i];
+
+    const labelText =
+      i < guessHistory.length
+        ? `#${String.fromCharCode(97 + i)}`
+        : guessLabel(i);
+
+    const guessText =
+      i < guessHistory.length ? guess : "     ";
+
+    const row = document.createElement("div");
+    row.className = "row";
+    row.tabIndex = -1;
+
+    row.textContent =
+      `${labelText} ` +
+      `${acc.correct}` +
+      ` ` +
+      `${guessText}` +
+      ` ` +
+      `${acc.wrong}`;
+
+    board.appendChild(row);
+
+    // Focus active row
+    if (i === guessHistory.length) {
+      row.focus();
+    }
+  }
+
+  label.textContent = guessLabel(guessHistory.length);
 }
 
-/* ---------- Row Format Self-Test (Dev Guardrail) ---------- */
-(function rowFormatSelfTest() {
-  const EMPTY = "-----";
+// -----------------------------
+// Validation
+// -----------------------------
 
-  const test = formatRow({
-    guessIndex: 0,
-    correct: EMPTY,
-    guess: "about",
-    wrong: EMPTY
-  });
+function isValidGuess(guess) {
+  if (guess.length !== WORD_LENGTH) {
+    status.textContent = STATUS.invalidLength;
+    return false;
+  }
 
-  const parts = test.split(" ");
+  if (!/^[a-z0-9;']+$/.test(guess)) {
+    status.textContent = STATUS.invalidChars;
+    return false;
+  }
 
-  console.assert(parts.length === 4,
-    "Row must contain exactly 4 space-separated fields");
-  console.assert(parts[1].length === 5,
-    "Correct field must be exactly 5 cells wide");
-  console.assert(parts[2].length === 5,
-    "Guess field must be exactly 5 cells wide");
-  console.assert(parts[3].length === 5,
-    "wr;g field must be exactly 5 cells wide");
-})();
-
-/* ---------------- Rendering ---------------- */
-
-function renderRow(text) {
-  const board = document.getElementById("game-board");
-
-  const row = document.createElement("div");
-  row.className = "row";
-  row.tabIndex = -1;
-  row.textContent = text;
-
-  board.appendChild(row);
-  row.focus();
+  return true;
 }
 
-/* ---------------- Game Logic ---------------- */
+// -----------------------------
+// Submission
+// -----------------------------
 
-function endGame() {
-  gameOver = true;
-
-  document.getElementById("guess-input").disabled = true;
-  document.getElementById("submit-btn").disabled = true;
-
-  setStatus(STATUS.LOCKED);
-}
-
-function submitGuess() {
+form.addEventListener("submit", e => {
+  e.preventDefault();
   if (gameOver) return;
 
-  const input = document.getElementById("guess-input");
-  const guess = input.value;
+  const guess = input.value.trim();
 
-  if (guess.length !== 5) {
-    setStatus(STATUS.INVALID_LENGTH);
-    return;
-  }
+  if (!isValidGuess(guess)) return;
 
-  if (![...guess].every(ch => asciiToDots.hasOwnProperty(ch))) {
-    setStatus(STATUS.INVALID_CHARS);
-    return;
-  }
+  const prevAcc = accumulatorHistory[accumulatorHistory.length - 1];
+  const nextAcc = accumulate(prevAcc, guess);
 
-  const guessDots = asciiStringToDotsArray(guess);
-  const targetDots = asciiStringToDotsArray(WORD_OF_THE_DAY);
+  guessHistory.push(guess);
+  accumulatorHistory.push(nextAcc);
 
-  for (let i = 0; i < 5; i++) {
-    const g = parseInt(guessDots[i], 2);
-    const t = parseInt(targetDots[i], 2);
-
-    correctDots[i] =
-      (parseInt(correctDots[i], 2) | (g & t))
-        .toString(2).padStart(6, "0");
-
-    wrongDots[i] =
-      (parseInt(wrongDots[i], 2) | (g & ~t))
-        .toString(2).padStart(6, "0");
-  }
-
-  renderRow(formatRow({
-    guessIndex: currentGuess,
-    correct: dotsArrayToAsciiString(correctDots),
-    guess,
-    wrong: dotsArrayToAsciiString(wrongDots)
-  }));
-
-  currentGuess++;
   input.value = "";
-  setStatus(STATUS.RECORDED);
+  renderBoard();
 
   if (guess === WORD_OF_THE_DAY) {
-    setStatus(STATUS.WIN);
+    status.textContent = STATUS.win;
     endGame();
-    setStatus(STATUS.RELOAD);
-    return;
-  }
-
-  if (currentGuess >= MAX_GUESSES) {
-    setStatus(STATUS.LOSE);
+  } else if (guessHistory.length === MAX_GUESSES) {
+    status.textContent = STATUS.lose;
     endGame();
-    setStatus(STATUS.RELOAD);
-  }
-}
-
-/* ---------------- Init ---------------- */
-
-const input = document.getElementById("guess-input");
-const button = document.getElementById("submit-btn");
-
-button.addEventListener("click", submitGuess);
-
-input.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    submitGuess();
   }
 });
 
+// -----------------------------
+// End Game
+// -----------------------------
+
+function endGame() {
+  gameOver = true;
+  input.disabled = true;
+  status.textContent += " " + STATUS.locked + " " + STATUS.reload;
+}
+
+// -----------------------------
+// Init
+// -----------------------------
+
+renderBoard();
 input.focus();
-loadMapping();
