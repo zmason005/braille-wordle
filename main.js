@@ -6,7 +6,10 @@ const WORD_LENGTH = 5;
 const MAX_GUESSES = 6;
 const WORD_OF_THE_DAY = "a6ect";
 
-// Status messages (ASCII for Braille)
+// -----------------------------
+// Status messages (ASCII)
+// -----------------------------
+
 const STATUS = {
   invalidLength: 'guess m/ 2 exactly #e "*s"',
   invalidChars: 'guess 3ta9s 9valid "*s"',
@@ -26,6 +29,7 @@ let accumulatorHistory = [
 ];
 
 let gameOver = false;
+let validCharSet = new Set();
 
 // -----------------------------
 // DOM
@@ -34,7 +38,6 @@ let gameOver = false;
 const board = document.getElementById("board");
 const form = document.getElementById("guess-form");
 const input = document.getElementById("guess-input");
-const label = document.getElementById("guess-label");
 const status = document.getElementById("status");
 
 // -----------------------------
@@ -44,10 +47,6 @@ const status = document.getElementById("status");
 function guessLabel(index) {
   if (index === MAX_GUESSES - 1) return "f9al guess";
   return `guess #${String.fromCharCode(97 + index)}`;
-}
-
-function padOrBlank(str) {
-  return str ? str : "     ";
 }
 
 function accumulate(prev, guess) {
@@ -73,49 +72,42 @@ function accumulate(prev, guess) {
 // Rendering
 // -----------------------------
 
-function renderBoard() {
-  // Clear all rows except header
+function renderBoard(focusIndex = null) {
   board.querySelectorAll(".row:not(#header)").forEach(r => r.remove());
 
-  for (let i = 0; i <= guessHistory.length; i++) {
-    if (i > MAX_GUESSES) break;
-
-    const acc = accumulatorHistory[i];
-    const guess = guessHistory[i];
-
-    const labelText =
-      i < guessHistory.length
-        ? `#${String.fromCharCode(97 + i)}`
-        : guessLabel(i);
-
-    const guessText =
-      i < guessHistory.length ? guess : "     ";
-
+  // Render recorded guesses
+  for (let i = 0; i < guessHistory.length; i++) {
     const row = document.createElement("div");
     row.className = "row";
     row.tabIndex = -1;
 
+    const acc = accumulatorHistory[i];
     row.textContent =
-      `${labelText} ` +
-      `${acc.correct}` +
-      ` ` +
-      `${guessText}` +
-      ` ` +
+      `#${String.fromCharCode(97 + i)} ` +
+      `${acc.correct} ` +
+      `${guessHistory[i]} ` +
       `${acc.wrong}`;
 
     board.appendChild(row);
 
-    // Focus active row
-    if (i === guessHistory.length) {
+    if (i === focusIndex) {
       row.focus();
     }
   }
 
-  label.textContent = guessLabel(guessHistory.length);
+  // Render next label row only if game not over
+  if (!gameOver && guessHistory.length < MAX_GUESSES) {
+    const row = document.createElement("div");
+    row.className = "row";
+    row.textContent = guessLabel(guessHistory.length);
+    board.appendChild(row);
+  }
+
+  input.setAttribute("aria-label", guessLabel(guessHistory.length));
 }
 
 // -----------------------------
-// Validation
+// Validation (Mapping-Driven)
 // -----------------------------
 
 function isValidGuess(guess) {
@@ -124,9 +116,11 @@ function isValidGuess(guess) {
     return false;
   }
 
-  if (!/^[a-z0-9;']+$/.test(guess)) {
-    status.textContent = STATUS.invalidChars;
-    return false;
+  for (const ch of guess) {
+    if (!validCharSet.has(ch)) {
+      status.textContent = STATUS.invalidChars;
+      return false;
+    }
   }
 
   return true;
@@ -151,7 +145,7 @@ form.addEventListener("submit", e => {
   accumulatorHistory.push(nextAcc);
 
   input.value = "";
-  renderBoard();
+  renderBoard(guessHistory.length - 1);
 
   if (guess === WORD_OF_THE_DAY) {
     status.textContent = STATUS.win;
@@ -170,11 +164,17 @@ function endGame() {
   gameOver = true;
   input.disabled = true;
   status.textContent += " " + STATUS.locked + " " + STATUS.reload;
+  renderBoard();
 }
 
 // -----------------------------
 // Init
 // -----------------------------
 
-renderBoard();
-input.focus();
+fetch("braille-ascii-map.json")
+  .then(r => r.json())
+  .then(map => {
+    Object.keys(map).forEach(ch => validCharSet.add(ch));
+    renderBoard();
+    input.focus();
+  });
