@@ -26,8 +26,8 @@ const STATUS = {
 let guessHistory = [];
 let gameOver = false;
 
-let asciiToMask = new Map();   // 'a' → 0b100000
-let maskToAscii = new Map();   // 0b100000 → 'a'
+let asciiToMask = new Map();   // 'a' → bitmask
+let maskToAscii = new Map();   // bitmask → canonical ASCII
 
 // accumulatorHistory[n] reflects guesses 0..n-1
 let accumulatorHistory = [
@@ -67,7 +67,7 @@ function renderMask(mask, rowIndex) {
 }
 
 // -----------------------------
-// Accumulation (DOT-LEVEL)
+// Accumulation (DOT-LEVEL, FIXED)
 // -----------------------------
 
 function accumulate(prev, guess) {
@@ -76,7 +76,7 @@ function accumulate(prev, guess) {
     wrong: [...prev.wrong]
   };
 
-  // Union of all answer dots
+  // Union of all dots in the word of the day
   let answerUnion = 0;
   for (let ch of WORD_OF_THE_DAY) {
     answerUnion |= asciiToMask.get(ch);
@@ -86,13 +86,12 @@ function accumulate(prev, guess) {
     const guessMask = asciiToMask.get(guess[i]);
     const answerMask = asciiToMask.get(WORD_OF_THE_DAY[i]);
 
-    // Correct dots in correct position
+    // Correct dots (right position)
     next.correct[i] |= (guessMask & answerMask);
 
-    // Wrong dots (not present anywhere in answer)
-    if ((guessMask & answerUnion) === 0) {
-      next.wrong[i] |= guessMask;
-    }
+    // WRONG dots = dots in guess NOT anywhere in answer
+    const wrongDots = guessMask & ~answerUnion;
+    next.wrong[i] |= wrongDots;
   }
 
   return next;
