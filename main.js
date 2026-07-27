@@ -4,14 +4,13 @@ const MAX_GUESSES = 6;
 const START_DATE_MS = 1774396800000; // Day 0 = 2026-03-25
 const STORAGE_KEY = "contractable_game_state";
 
-const FORMSPREE_ENDPOINT = "https://formspree.io/f/mwvdgkyj";
-
 let WORD_OF_THE_DAY = null; // Stored as a complete object: { id, print, brlunicode }
 let allWords = [];          // Array of objects from daily-word4.json
 let asciiToDots = {};       // Maps both Computer Braille ASCII and Unicode Braille to 8-bit binary strings
 let dotsToAscii = {};       // Maps 8-bit binary strings to literal Unicode Braille characters
 let currentGuess = 0;
 let gameOver = false;
+let activeDayIndex = null; // The day index the currently-loaded game state belongs to
 
 // Persistent metric tracking targets across rounds (Cumulative)
 let correctDots = [];
@@ -20,10 +19,6 @@ let wrongDots = [];   // Cumulative union of "wrong" (guessed-but-not-in-target)
 // End game custom Braille Unicode messaging
 const WIN_STATUS_MESSAGE = "⠠⠠⠽⠀⠠⠠⠺⠔⠖⠀⠀";
 const LOSE_STATUS_MESSAGE = "⠀⠠⠎⠕⠗⠗⠽⠂⠀⠛⠁⠍⠑⠀⠕⠧⠻⠲⠀";
-
-// Braille "blank cell" character — treated as a word separator alongside regular whitespace,
-// since suggested words may be entered as raw Unicode Braille rather than print letters.
-const BRAILLE_BLANK = "\u2800";
 
 // Optimized 1-cell lower-sign prefixes (Numbers 1-6 dropped to bottom pins) for 20-cell display limits
 const ROW_NUMERIC_PREFIXES = ["⠂", "⠆", "⠒", "⠲", "⠢", "⠖"];
@@ -100,9 +95,21 @@ function getWordForDayIndex(dayIndex) {
   return cycle[position];
 }
 
+// Returns a stable integer "calendar day number" based on the PLAYER'S LOCAL date
+// (year/month/day), not raw UTC milliseconds. Using Date.UTC() on the local Y/M/D
+// components (rather than dividing Date.now() by 86400000) avoids drift around
+// DST transitions and ensures the boundary is local midnight, not UTC midnight.
+function localCalendarDayNumber() {
+  const now = new Date();
+  return Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000);
+}
+
+// Day 0 anchor expressed as the same kind of calendar day number, so subtracting
+// the two always yields a whole number of local calendar days.
+const START_DAY_NUMBER = Math.floor(START_DATE_MS / 86400000);
+
 function todayDayIndex() {
-  const nowUTC = Date.now();
-  return Math.floor((nowUTC - START_DATE_MS) / 86400000);
+  return localCalendarDayNumber() - START_DAY_NUMBER;
 }
 
 /* ── Loaders ──────────────────────────────────────────────────────────────── */
@@ -177,7 +184,6 @@ function loadAndRestoreGameState() {
       if (state.gameOver) {
         gameOver = true;
         lockControls();
-        revealPostGameSuggestForm();
       }
     } else {
       // Stale data from previous days is wiped cleanly
@@ -207,6 +213,61 @@ function getStoredGuesses() {
   return [];
 }
 
+// Detects whether the local calendar day has advanced since the game was loaded
+// (e.g. a browser tab left open past local midnight on mobile Safari) and, if so,
+// fully resets in-memory and persisted state for the new day's word. Safe to call
+// often — it's a no-op unless the day has actually changed.
+function checkForNewDay() {
+  const nowDayIndex = todayDayIndex();
+  if (activeDayIndex !== null && nowDayIndex !== activeDayIndex) {
+    resetGameForNewDay(nowDayIndex);
+    return true;
+  }
+  return false;
+}
+
+function resetGameForNewDay(nowDayIndex) {
+  // Wipe any stale state left over from the previous day
+  localStorage.removeItem(STORAGE_KEY);
+
+  activeDayIndex = nowDayIndex;
+  WORD_OF_THE_DAY = getWordForDayIndex(nowDayIndex);
+
+  currentGuess = 0;
+  gameOver = false;
+  correctDots = [];
+  wrongDots = [];
+
+  // Clear rendered guess rows (leave the header row intact)
+  const board = document.getElementById("game-board");
+  if (board) {
+    board.querySelectorAll(".row").forEach(row => row.remove());
+  }
+
+  // Reset status area
+  const status = document.getElementById("status");
+  if (status) {
+    status.setAttribute("hidden", "");
+    status.textContent = "";
+  }
+
+  // Hide the post-game suggestion form again
+  const suggestSection = document.getElementById("post-game-suggest");
+  if (suggestSection) suggestSection.hidden = true;
+
+  // Re-enable controls and clear any leftover input
+  const input = document.getElementById("guess-input");
+  const button = document.getElementById("submit-btn");
+  if (input) {
+    input.disabled = false;
+    input.value = "";
+  }
+  if (button) button.disabled = false;
+
+  updateGuessLabel();
+  if (input) input.focus();
+}
+
 /* ── UI & Game Logic ─────────────────────────────────────────────────────── */
 
 function setStatus(msg) {
@@ -216,33 +277,9 @@ function setStatus(msg) {
   setTimeout(() => { status.focus(); }, 0); 
 }
 
-// Renders "Not in word list." plus an inline "Should it be? Click to suggest."
-// button that fires a background suggestion for the exact guess the player typed.
-function setStatusWithSuggestLink(word) {
-  const status = document.getElementById("status");
-  status.textContent = "";
-
-  status.appendChild(document.createTextNode("Not in word list. "));
-
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "suggest-link-btn";
-  btn.textContent = "Should it be? Click to suggest.";
-  btn.addEventListener("click", () => submitSingleWordSuggestion(word, btn));
-
-  status.appendChild(btn);
-  status.removeAttribute("hidden");
-  setTimeout(() => { status.focus(); }, 0);
-}
-
-function revealPostGameSuggestForm() {
-  const section = document.getElementById("post-game-suggest");
-  if (section) section.hidden = false;
-}
-
 function updateGuessLabel() {
   const label = document.getElementById("guess-label");
-  label.textContent = (currentGuess === MAX_GUESSES - 1) ? "f9al guess" : "guess";
+  label.textContent = (currentGuess === MAX_GUESSES - 1) ? "final guess" : "guess";
 }
 
 function dotsArrayToAsciiString(arr) {
@@ -272,107 +309,6 @@ function renderRow(rowText) {
   row.focus();
 }
 
-// A guess qualifies for the one-click "should it be?" suggestion only if it's a clean
-// standalone token: 5+ characters, and containing no regular whitespace or braille blanks
-// (which would mean the player typed something other than a single word).
-function isValidSingleSuggestion(rawGuess) {
-  if (!rawGuess) return false;
-  if (rawGuess.length < 5) return false;
-  if (/\s/.test(rawGuess)) return false;
-  if (rawGuess.indexOf(BRAILLE_BLANK) !== -1) return false;
-  return true;
-}
-
-// Split raw textarea content into candidate words on either regular whitespace
-// or braille blank cells, since suggestions may be typed as print letters or
-// as raw Unicode Braille.
-function parseSuggestionWords(raw) {
-  return raw
-    .split(/[\s\u2800]+/)
-    .map(w => w.trim())
-    .filter(w => w.length > 0);
-}
-
-function validateSuggestions(raw) {
-  const words = parseSuggestionWords(raw);
-  const valid = [];
-  const skipped = [];
-  words.forEach(w => {
-    if (w.length >= 5) {
-      valid.push(w);
-    } else {
-      skipped.push(w);
-    }
-  });
-  return { valid, skipped };
-}
-
-async function postSuggestion(payload) {
-  const formData = new FormData();
-  Object.keys(payload).forEach(key => formData.append(key, payload[key]));
-
-  const response = await fetch(FORMSPREE_ENDPOINT, {
-    method: "POST",
-    headers: {
-      "Accept": "application/json"
-    },
-    body: formData
-  });
-  return response.ok;
-}
-
-async function submitSingleWordSuggestion(word, btnEl) {
-  btnEl.disabled = true;
-  btnEl.textContent = "Sending...";
-
-  try {
-    const ok = await postSuggestion({ word: word, source: "single-click-suggest" });
-    btnEl.textContent = ok ? "Thanks, suggestion sent!" : "Couldn't send \u2014 try later.";
-    if (!ok) btnEl.disabled = false;
-  } catch (e) {
-    btnEl.textContent = "Couldn't send \u2014 try later.";
-    btnEl.disabled = false;
-  }
-}
-
-async function submitPostGameSuggestions() {
-  const textarea = document.getElementById("suggest-input");
-  const feedback = document.getElementById("suggest-feedback");
-  const btn = document.getElementById("suggest-submit-btn");
-
-  const { valid, skipped } = validateSuggestions(textarea.value);
-
-  if (valid.length === 0) {
-    feedback.textContent = skipped.length
-      ? `All ${skipped.length} word(s) were too short (need 5+ characters). Nothing sent.`
-      : "Enter at least one word first.";
-    return;
-  }
-
-  btn.disabled = true;
-  btn.textContent = "Sending...";
-
-  try {
-    const ok = await postSuggestion({ words: valid.join(", "), source: "post-game-form" });
-
-    if (ok) {
-      let msg = `Sent ${valid.length} word${valid.length === 1 ? "" : "s"}.`;
-      if (skipped.length > 0) {
-        msg += ` Skipped ${skipped.length} (too short): ${skipped.join(", ")}.`;
-      }
-      feedback.textContent = msg;
-      textarea.value = "";
-    } else {
-      feedback.textContent = "Couldn't send suggestions \u2014 try again later.";
-    }
-  } catch (e) {
-    feedback.textContent = "Couldn't send suggestions \u2014 try again later.";
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Send suggestions";
-  }
-}
-
 // Split out core processing logic so page reloader can pass values silently
 function evaluateAndRenderGuess(rawGuess, isRestoring = false) {
   let matchedWord = null;
@@ -396,13 +332,7 @@ function evaluateAndRenderGuess(rawGuess, isRestoring = false) {
   }
 
   if (!matchedWord) {
-    if (!isRestoring) {
-      if (isValidSingleSuggestion(rawGuess)) {
-        setStatusWithSuggestLink(rawGuess);
-      } else {
-        setStatus("Not in word list.");
-      }
-    }
+    if (!isRestoring) setStatus("Not in word list.");
     return false;
   }
 
@@ -452,18 +382,20 @@ function evaluateAndRenderGuess(rawGuess, isRestoring = false) {
     setStatus(WIN_STATUS_MESSAGE);
     gameOver = true;
     if (!isRestoring) lockControls();
-    revealPostGameSuggestForm();
   } else if (currentGuess >= MAX_GUESSES) {
     setStatus(LOSE_STATUS_MESSAGE);
     gameOver = true;
     if (!isRestoring) lockControls();
-    revealPostGameSuggestForm();
   }
 
   return true;
 }
 
 function submitGuess() {
+  // If local midnight has passed since load (e.g. a tab left open overnight),
+  // reset to today's puzzle before evaluating anything.
+  if (checkForNewDay()) return;
+
   if (gameOver || !WORD_OF_THE_DAY) return;
 
   const input = document.getElementById("guess-input");
@@ -493,7 +425,8 @@ async function init() {
   await Promise.all([loadMapping(), loadDailyWords()]);
 
   if (allWords.length > 0) {
-    WORD_OF_THE_DAY = getWordForDayIndex(todayDayIndex());
+    activeDayIndex = todayDayIndex();
+    WORD_OF_THE_DAY = getWordForDayIndex(activeDayIndex);
     const debugLog = document.getElementById("debug-log");
     if (debugLog) debugLog.textContent = ""; 
     
@@ -505,7 +438,6 @@ async function init() {
 
   const input = document.getElementById("guess-input");
   const button = document.getElementById("submit-btn");
-  const suggestBtn = document.getElementById("suggest-submit-btn");
 
   button.addEventListener("click", submitGuess);
   input.addEventListener("keydown", (e) => {
@@ -515,9 +447,11 @@ async function init() {
     }
   });
 
-  if (suggestBtn) {
-    suggestBtn.addEventListener("click", submitPostGameSuggestions);
-  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      checkForNewDay();
+    }
+  });
 
   updateGuessLabel();
   if (!gameOver) {
