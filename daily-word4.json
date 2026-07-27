@@ -1,242 +1,462 @@
-[
-    {
-        "id": 1,
-        "print": "absence",
-        "brlunicode": "â â ƒâ Žâ °â ‘"
-    },
-    {
-        "id": 2,
-        "print": "absent",
-        "brlunicode": "â â ƒâ Žâ ¢â ž"
-    },
-    {
-        "id": 3,
-        "print": "abuse",
-        "brlunicode": "â â ƒâ ¥â Žâ ‘"
-    },
-    {
-        "id": 4,
-        "print": "accept",
-        "brlunicode": "â â ’â ‘â â ž"
-    },
-    {
-        "id": 5,
-        "print": "access",
-        "brlunicode": "â â ’â ‘â Žâ Ž"
-    },
-    {
-        "id": 6,
-        "print": "accounting",
-        "brlunicode": "â â ’â ¨â žâ ¬"
-    },
-    {
-        "id": 7,
-        "print": "accused",
-        "brlunicode": "â â ’â ¥â Žâ «"
-    },
-    {
-        "id": 8,
-        "print": "acres",
-        "brlunicode": "â â ‰â —â ‘â Ž"
-    },
-    {
-        "id": 9,
-        "print": "actor",
-        "brlunicode": "â â ‰â žâ •â —"
-    },
-    {
-        "id": 10,
-        "print": "acute",
-        "brlunicode": "â â ‰â ¥â žâ ‘"
-    },
-    {
-        "id": 11,
-        "print": "adjust",
-        "brlunicode": "â â ™â šâ ¥â Œ"
-    },
-    {
-        "id": 12,
-        "print": "admit",
-        "brlunicode": "â â ™â â Šâ ž"
-    },
-    {
-        "id": 13,
-        "print": "adobe",
-        "brlunicode": "â â ™â •â ƒâ ‘"
-    },
-    {
-        "id": 14,
-        "print": "adopt",
-        "brlunicode": "â â ™â •â â ž"
-    },
-    {
-        "id": 15,
-        "print": "adult",
-        "brlunicode": "â â ™â ¥â ‡â ž"
-    },
-    {
-        "id": 16,
-        "print": "advance",
-        "brlunicode": "â â ™â §â ¨â ‘"
-    },
-    {
-        "id": 17,
-        "print": "advert",
-        "brlunicode": "â â ™â §â »â ž"
-    },
-    {
-        "id": 18,
-        "print": "aerial",
-        "brlunicode": "â â »â Šâ â ‡"
-    },
-    {
-        "id": 19,
-        "print": "affair",
-        "brlunicode": "â â –â â Šâ —"
-    },
-    {
-        "id": 20,
-        "print": "affect",
-        "brlunicode": "â â –â ‘â ‰â ž"
-    },
-    {
-        "id": 21,
-        "print": "agency",
-        "brlunicode": "â â ›â ¢â ‰â ½"
-    },
-    {
-        "id": 22,
-        "print": "agenda",
-        "brlunicode": "â â ›â ¢â ™â "
-    },
-    {
-        "id": 23,
-        "print": "agree",
-        "brlunicode": "â â ›â —â ‘â ‘"
-    },
-    {
-        "id": 24,
-        "print": "agreed",
-        "brlunicode": "â â ›â —â ‘â «"
-    },
-    {
-        "id": 25,
-        "print": "album",
-        "brlunicode": "â â ‡â ƒâ ¥â "
-    },
-    {
-        "id": 26,
-        "print": "alias",
-        "brlunicode": "â â ‡â Šâ â Ž"
-    },
-    {
-        "id": 27,
-        "print": "align",
-        "brlunicode": "â â ‡â Šâ ›â "
-    },
-    {
-        "id": 28,
-        "print": "alike",
-        "brlunicode": "â â ‡â Šâ …â ‘"
-    },
-    {
-        "id": 29,
-        "print": "alive",
-        "brlunicode": "â â ‡â Šâ §â ‘"
-    },
-    {
-        "id": 30,
-        "print": "allied",
-        "brlunicode": "â â ‡â ‡â Šâ «"
-    },
-    {
-        "id": 31,
-        "print": "allowed",
-        "brlunicode": "â â ‡â ‡â ªâ «"
-    },
-    {
-        "id": 32,
-        "print": "allowing",
-        "brlunicode": "â â ‡â ‡â ªâ ¬"
-    },
-    {
-        "id": 33,
-        "print": "allows",
-        "brlunicode": "â â ‡â ‡â ªâ Ž"
-    },
-    {
-        "id": 34,
-        "print": "alloy",
-        "brlunicode": "â â ‡â ‡â •â ½"
-    },
-    {
-        "id": 35,
-        "print": "alpha",
-        "brlunicode": "â â ‡â â “â "
-    },
-    {
-        "id": 36,
-        "print": "alpine",
-        "brlunicode": "â â ‡â â ”â ‘"
-    },
-    {
-        "id": 37,
-        "print": "altered",
-        "brlunicode": "â â ‡â žâ »â «"
-    },
-    {
-        "id": 38,
-        "print": "amazing",
-        "brlunicode": "â â â â µâ ¬"
-    },
-    {
-        "id": 39,
-        "print": "amended",
-        "brlunicode": "â â â ¢â ™â «"
-    },
-    {
-        "id": 40,
-        "print": "anchor",
-        "brlunicode": "â â â ¡â •â —"
-    },
-    {
-        "id": 41,
-        "print": "anderson",
-        "brlunicode": "â ¯â »â Žâ •â "
-    },
-    {
-        "id": 42,
-        "print": "andorra",
-        "brlunicode": "â ¯â •â —â —â "
-    },
-    {
-        "id": 43,
-        "print": "andrews",
-        "brlunicode": "â ¯â —â ‘â ºâ Ž"
-    },
-    {
-        "id": 55,
-        "print": "apple",
-        "brlunicode": "â â â â ‡â ‘"
-    },
-    {
-        "id": 1350,
-        "print": "happy",
-        "brlunicode": "â “â â â â ½"
-    },
-    {
-        "id": 1352,
-        "print": "banging",
-        "brlunicode": "â ƒâ â â ›â ¬"
-    },
-    {
-        "id": 1353,
-        "print": "banger",
-        "brlunicode": "â ƒâ â â ›â »"
-    },
-    {
-        "id": 1354,
-        "print": "rival",
-        "brlunicode": "â —â Šâ §â â ‡"
+"use strict";
+
+const MAX_GUESSES = 6;
+const START_DATE_MS = 1774396800000; // Day 0 = 2026-03-25
+const STORAGE_KEY = "contractable_game_state";
+
+let WORD_OF_THE_DAY = null; // Stored as a complete object: { id, print, brlunicode }
+let allWords = [];          // Array of objects from daily-word4.json
+let asciiToDots = {};       // Maps both Computer Braille ASCII and Unicode Braille to 8-bit binary strings
+let dotsToAscii = {};       // Maps 8-bit binary strings to literal Unicode Braille characters
+let currentGuess = 0;
+let gameOver = false;
+let activeDayIndex = null; // The day index the currently-loaded game state belongs to
+
+// Persistent metric tracking targets across rounds (Cumulative)
+let correctDots = [];
+let wrongDots = [];   // Cumulative union of "wrong" (guessed-but-not-in-target) dots across all guesses this game
+
+// End game custom Braille Unicode messaging
+const WIN_STATUS_MESSAGE = "⠠⠠⠽⠀⠠⠠⠺⠔⠖⠀⠀";
+const LOSE_STATUS_MESSAGE = "⠀⠠⠎⠕⠗⠗⠽⠂⠀⠛⠁⠍⠑⠀⠕⠧⠻⠲⠀";
+
+// Optimized 1-cell lower-sign prefixes (Numbers 1-6 dropped to bottom pins) for 20-cell display limits
+const ROW_NUMERIC_PREFIXES = ["⠂", "⠆", "⠒", "⠲", "⠢", "⠖"];
+
+// Helper to log errors directly to the screen on iPhone
+function mobileLog(msg) {
+  const log = document.getElementById("debug-log");
+  if (log) log.textContent += msg + "\n";
+  console.error(msg);
+}
+
+/* ── PRNG & Logic ────────────────────────────────────────────────────────── */
+
+function mulberry32(seed) {
+  seed = seed >>> 0;
+  return function() {
+    seed = (seed + 0x6D2B79F5) >>> 0;
+    let z = seed;
+    z = Math.imul(z ^ (z >>> 15), z | 1) >>> 0;
+    z = (z ^ (z + Math.imul(z ^ (z >>> 7), z | 61))) >>> 0;
+    return ((z ^ (z >>> 14)) >>> 0) / 0x100000000;
+  };
+}
+
+function deterministicShuffle(arr, seed) {
+  const rng = mulberry32(seed);
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function applyFirstCharConstraint(arr, prevLastChar = null) {
+  const a = arr.slice();
+  if (prevLastChar !== null && a[0].print[0] === prevLastChar) {
+    for (let j = 1; j < a.length; j++) {
+      if (a[j].print[0] !== prevLastChar) {
+        [a[0], a[j]] = [a[j], a[0]];
+        break;
+      }
     }
-]
+  }
+  for (let i = 1; i < a.length; i++) {
+    if (a[i].print[0] === a[i - 1].print[0]) {
+      for (let j = i + 1; j < a.length; j++) {
+        if (a[j].print[0] !== a[i - 1].print[0]) {
+          [a[i], a[j]] = [a[j], a[i]];
+          break;
+        }
+      }
+    }
+  }
+  return a;
+}
+
+function buildCycle(cycleIndex, prevLastChar = null) {
+  const seed = (START_DATE_MS + cycleIndex) >>> 0;
+  const shuffled = deterministicShuffle(allWords, seed);
+  return applyFirstCharConstraint(shuffled, prevLastChar);
+}
+
+function getWordForDayIndex(dayIndex) {
+  const listSize = allWords.length || 1; 
+  const cycleIndex = Math.floor(dayIndex / listSize);
+  const position = dayIndex % listSize;
+  let prevLastChar = null;
+  if (cycleIndex > 0) {
+    const prevCycle = buildCycle(cycleIndex - 1, null);
+    prevLastChar = prevCycle[prevCycle.length - 1].print[0];
+  }
+  const cycle = buildCycle(cycleIndex, prevLastChar);
+  return cycle[position];
+}
+
+// Returns a stable integer "calendar day number" based on the PLAYER'S LOCAL date
+// (year/month/day), not raw UTC milliseconds. Using Date.UTC() on the local Y/M/D
+// components (rather than dividing Date.now() by 86400000) avoids drift around
+// DST transitions and ensures the boundary is local midnight, not UTC midnight.
+function localCalendarDayNumber() {
+  const now = new Date();
+  return Math.floor(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 86400000);
+}
+
+// Day 0 anchor expressed as the same kind of calendar day number, so subtracting
+// the two always yields a whole number of local calendar days.
+const START_DAY_NUMBER = Math.floor(START_DATE_MS / 86400000);
+
+function todayDayIndex() {
+  return localCalendarDayNumber() - START_DAY_NUMBER;
+}
+
+/* ── Loaders ──────────────────────────────────────────────────────────────── */
+
+async function loadDailyWords() {
+  try {
+    const response = await fetch("daily-word4.json");
+    if (!response.ok) throw new Error("Could not find daily-word4.json");
+    allWords = await response.json();
+  } catch (e) {
+    mobileLog("Daily Words Error: " + e.message);
+  }
+}
+
+async function loadMapping() {
+  try {
+    const response = await fetch("brlunicode-mapping.json");
+    if (!response.ok) throw new Error("Could not find brlunicode-mapping.json");
+    const data = await response.json();
+    
+    asciiToDots = {};
+    dotsToAscii = {};
+    
+    data.forEach(item => {
+      const fullBitmask = item.bitmask;
+      
+      if (item.printAscii) {
+        asciiToDots[item.printAscii] = fullBitmask;
+      }
+      if (item.unicodeChar) {
+        asciiToDots[item.unicodeChar] = fullBitmask;
+      }
+      
+      dotsToAscii[fullBitmask] = item.unicodeChar || "\u2800";
+    });
+  } catch (e) {
+    mobileLog("Mapping Error: " + e.message);
+  }
+}
+
+/* ── State Persistence Management ─────────────────────────────────────────── */
+
+function saveGameState(rawGuessesArray) {
+  const state = {
+    dayIndex: todayDayIndex(),
+    guesses: rawGuessesArray,
+    gameOver: gameOver
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function loadAndRestoreGameState() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (!saved) return;
+
+  try {
+    const state = JSON.parse(saved);
+    const currentDay = todayDayIndex();
+
+    // If the saved data matches today's game profile, reconstruct the state
+    if (state && state.dayIndex === currentDay) {
+      const input = document.getElementById("guess-input");
+      
+      // Programmatically process prior inputs to rebuild the interface metrics natively
+      if (Array.isArray(state.guesses)) {
+        state.guesses.forEach(guessValue => {
+          evaluateAndRenderGuess(guessValue, true);
+        });
+      }
+      
+      // If the recovered session profile marked the game finished, engage locking
+      if (state.gameOver) {
+        gameOver = true;
+        lockControls();
+      }
+    } else {
+      // Stale data from previous days is wiped cleanly
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  } catch (e) {
+    mobileLog("State Restoration Error: " + e.message);
+  }
+}
+
+function lockControls() {
+  const input = document.getElementById("guess-input");
+  const button = document.getElementById("submit-btn");
+  if (input) input.disabled = true;
+  if (button) button.disabled = true;
+}
+
+function getStoredGuesses() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (!saved) return [];
+  try {
+    const state = JSON.parse(saved);
+    if (state && state.dayIndex === todayDayIndex() && Array.isArray(state.guesses)) {
+      return state.guesses;
+    }
+  } catch(e) {}
+  return [];
+}
+
+// Detects whether the local calendar day has advanced since the game was loaded
+// (e.g. a browser tab left open past local midnight on mobile Safari) and, if so,
+// fully resets in-memory and persisted state for the new day's word. Safe to call
+// often — it's a no-op unless the day has actually changed.
+function checkForNewDay() {
+  const nowDayIndex = todayDayIndex();
+  if (activeDayIndex !== null && nowDayIndex !== activeDayIndex) {
+    resetGameForNewDay(nowDayIndex);
+    return true;
+  }
+  return false;
+}
+
+function resetGameForNewDay(nowDayIndex) {
+  // Wipe any stale state left over from the previous day
+  localStorage.removeItem(STORAGE_KEY);
+
+  activeDayIndex = nowDayIndex;
+  WORD_OF_THE_DAY = getWordForDayIndex(nowDayIndex);
+
+  currentGuess = 0;
+  gameOver = false;
+  correctDots = [];
+  wrongDots = [];
+
+  // Clear rendered guess rows (leave the header row intact)
+  const board = document.getElementById("game-board");
+  if (board) {
+    board.querySelectorAll(".row").forEach(row => row.remove());
+  }
+
+  // Reset status area
+  const status = document.getElementById("status");
+  if (status) {
+    status.setAttribute("hidden", "");
+    status.textContent = "";
+  }
+
+  // Hide the post-game suggestion form again
+  const suggestSection = document.getElementById("post-game-suggest");
+  if (suggestSection) suggestSection.hidden = true;
+
+  // Re-enable controls and clear any leftover input
+  const input = document.getElementById("guess-input");
+  const button = document.getElementById("submit-btn");
+  if (input) {
+    input.disabled = false;
+    input.value = "";
+  }
+  if (button) button.disabled = false;
+
+  updateGuessLabel();
+  if (input) input.focus();
+}
+
+/* ── UI & Game Logic ─────────────────────────────────────────────────────── */
+
+function setStatus(msg) {
+  const status = document.getElementById("status");
+  status.textContent = msg;
+  status.removeAttribute("hidden"); 
+  setTimeout(() => { status.focus(); }, 0); 
+}
+
+function updateGuessLabel() {
+  const label = document.getElementById("guess-label");
+  label.textContent = (currentGuess === MAX_GUESSES - 1) ? "final guess" : "guess";
+}
+
+function dotsArrayToAsciiString(arr) {
+  return arr.map(d => dotsToAscii[d] ?? "\u2800").join("");
+}
+
+function formatRow({ guessIndex, correct, guess, wrong }) {
+  const label = guessIndex < 6 ? ROW_NUMERIC_PREFIXES[guessIndex] : "";
+  return `${label}\u2800${correct}\u2800${guess}\u2800${wrong}`;
+}
+
+function renderRow(rowText) {
+  const board = document.getElementById("game-board");
+  const row = document.createElement("div");
+  row.className = "row";
+  row.tabIndex = -1;
+  
+  row.setAttribute("aria-braillelabel", rowText);
+  row.setAttribute("aria-label", `Row ${currentGuess + 1}`);
+
+  const visualWrapper = document.createElement("span");
+  visualWrapper.setAttribute("aria-hidden", "true");
+  visualWrapper.textContent = rowText;
+  
+  row.appendChild(visualWrapper);
+  board.appendChild(row);
+  row.focus();
+}
+
+// Split out core processing logic so page reloader can pass values silently
+function evaluateAndRenderGuess(rawGuess, isRestoring = false) {
+  let matchedWord = null;
+  let guessAsUnicode = "";
+
+  const isStandardPrint = /^[A-Za-z0-9]+$/.test(rawGuess);
+
+  if (isStandardPrint) {
+    const lowerGuess = rawGuess.toLowerCase();
+    matchedWord = allWords.find(word => word.print.toLowerCase() === lowerGuess);
+    if (matchedWord) {
+      guessAsUnicode = matchedWord.brlunicode;
+    }
+  } else {
+    const guessDots = [];
+    for (const ch of rawGuess) {
+      guessDots.push(asciiToDots[ch] || "00000000"); 
+    }
+    guessAsUnicode = dotsArrayToAsciiString(guessDots);
+    matchedWord = allWords.find(word => word.brlunicode === guessAsUnicode);
+  }
+
+  if (!matchedWord) {
+    if (!isRestoring) setStatus("Not in word list.");
+    return false;
+  }
+
+  const targetUnicode = WORD_OF_THE_DAY.brlunicode;
+  const targetDots = [];
+  for (const ch of targetUnicode) {
+    targetDots.push(asciiToDots[ch] || "00000000");
+  }
+
+  const guessDotsArray = [];
+  for (const ch of guessAsUnicode) {
+    guessDotsArray.push(asciiToDots[ch] || "00000000");
+  }
+
+  if (correctDots.length !== targetDots.length) {
+    correctDots = Array(targetDots.length).fill(0);
+    wrongDots = Array(targetDots.length).fill(0);
+  }
+
+  const rowCorrectStrings = [];
+  const rowWrongStrings = [];
+
+  for (let i = 0; i < targetDots.length; i++) {
+    const g = parseInt(guessDotsArray[i] || "00000000", 2);
+    const t = parseInt(targetDots[i], 2);
+
+    correctDots[i] |= (g & t);
+    wrongDots[i] |= (g & ~t);
+
+    rowCorrectStrings.push(correctDots[i].toString(2).padStart(8, "0"));
+    rowWrongStrings.push(wrongDots[i].toString(2).padStart(8, "0"));
+  }
+
+  renderRow(formatRow({
+    guessIndex: currentGuess,
+    correct: dotsArrayToAsciiString(rowCorrectStrings),
+    guess: guessAsUnicode,
+    wrong: dotsArrayToAsciiString(rowWrongStrings),
+  }));
+
+  currentGuess++;
+  updateGuessLabel();
+
+  const isMatch = (matchedWord.print.toLowerCase() === WORD_OF_THE_DAY.print.toLowerCase());
+
+  if (isMatch) {
+    setStatus(WIN_STATUS_MESSAGE);
+    gameOver = true;
+    if (!isRestoring) lockControls();
+  } else if (currentGuess >= MAX_GUESSES) {
+    setStatus(LOSE_STATUS_MESSAGE);
+    gameOver = true;
+    if (!isRestoring) lockControls();
+  }
+
+  return true;
+}
+
+function submitGuess() {
+  // If local midnight has passed since load (e.g. a tab left open overnight),
+  // reset to today's puzzle before evaluating anything.
+  if (checkForNewDay()) return;
+
+  if (gameOver || !WORD_OF_THE_DAY) return;
+
+  const input = document.getElementById("guess-input");
+  const rawGuess = input.value.trim();
+  if (!rawGuess) return;
+
+  if (!gameOver) {
+    const statusDiv = document.getElementById("status");
+    statusDiv.setAttribute("hidden", "");
+    statusDiv.textContent = "";
+  }
+
+  // Evaluate the validation track
+  const success = evaluateAndRenderGuess(rawGuess, false);
+
+  if (success) {
+    // Commit the new entry to permanent storage records
+    const historicalGuesses = getStoredGuesses();
+    historicalGuesses.push(rawGuess);
+    saveGameState(historicalGuesses);
+    
+    input.value = "";
+  }
+}
+
+async function init() {
+  await Promise.all([loadMapping(), loadDailyWords()]);
+
+  if (allWords.length > 0) {
+    activeDayIndex = todayDayIndex();
+    WORD_OF_THE_DAY = getWordForDayIndex(activeDayIndex);
+    const debugLog = document.getElementById("debug-log");
+    if (debugLog) debugLog.textContent = ""; 
+    
+    // Core game state loading cycle runs immediately when dictionary data arrives
+    loadAndRestoreGameState();
+  } else {
+    mobileLog("Critical: No words loaded. Check JSON files.");
+  }
+
+  const input = document.getElementById("guess-input");
+  const button = document.getElementById("submit-btn");
+
+  button.addEventListener("click", submitGuess);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submitGuess();
+    }
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      checkForNewDay();
+    }
+  });
+
+  updateGuessLabel();
+  if (!gameOver) {
+    input.focus();
+  }
+}
+
+init().catch(e => mobileLog("Init Error: " + e.message));
