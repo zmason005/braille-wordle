@@ -6748,5 +6748,505 @@
     "id": 1351,
     "print": "banger",
     "brlunicode": "⠃⠁⠝⠛⠻"
+  },
+  {
+    "id": 1352,
+    "print": "anyone",
+    "brlunicode": "⠁⠝⠽⠐⠕"
+  },
+  {
+    "id": 1353,
+    "print": "anything",
+    "brlunicode": "⠁⠝⠽⠹⠬"
+  },
+  {
+    "id": 1354,
+    "print": "ashamed",
+    "brlunicode": "⠁⠩⠁⠍⠫"
+  },
+  {
+    "id": 1355,
+    "print": "awake",
+    "brlunicode": "⠁⠺⠁⠅⠑"
+  },
+  {
+    "id": 1356,
+    "print": "balls",
+    "brlunicode": "⠃⠁⠇⠇⠎"
+  },
+  {
+    "id": 1357,
+    "print": "beeping",
+    "brlunicode": "⠃⠑⠑⠏⠬"
+  },
+  {
+    "id": 1358,
+    "print": "birds",
+    "brlunicode": "⠃⠊⠗⠙⠎"
+  },
+  {
+    "id": 1359,
+    "print": "bleep",
+    "brlunicode": "⠃⠇⠑⠑⠏"
+  },
+  {
+    "id": 1360,
+    "print": "books",
+    "brlunicode": "⠃⠕⠕⠅⠎"
+  },
+  {
+    "id": 1361,
+    "print": "borrow",
+    "brlunicode": "⠃⠕⠗⠗⠪"
+  },
+  {
+    "id": 1362,
+    "print": "boyfriend",
+    "brlunicode": "⠃⠕⠽⠋⠗"
+  },
+  {
+    "id": 1363,
+    "print": "bucks",
+    "brlunicode": "⠃⠥⠉⠅⠎"
+  },
+  {
+    "id": 1364,
+    "print": "burned",
+    "brlunicode": "⠃⠥⠗⠝⠫"
+  },
+  {
+    "id": 1365,
+    "print": "calls",
+    "brlunicode": "⠉⠁⠇⠇⠎"
+  },
+  {
+    "id": 1366,
+    "print": "cases",
+    "brlunicode": "⠉⠁⠎⠑⠎"
+  },
+  {
+    "id": 1367,
+    "print": "charges",
+    "brlunicode": "⠡⠜⠛⠑⠎"
+  },
+  {
+    "id": 1368,
+    "print": "chatter",
+    "brlunicode": "⠡⠁⠞⠞⠻"
+  },
+  {
+    "id": 1369,
+    "print": "clears",
+    "brlunicode": "⠉⠇⠑⠜⠎"
+  },
+  {
+    "id": 1370,
+    "print": "comes",
+    "brlunicode": "⠉⠕⠍⠑⠎"
+  },
+  {
+    "id": 1371,
+    "print": "convince",
+    "brlunicode": "⠒⠧⠔⠉⠑"
+  },
+  {
+    "id": 1372,
+    "print": "discuss",
+    "brlunicode": "⠲⠉⠥⠎⠎"
+  },
+  {
+    "id": 1373,
+    "print": "disgusting",
+    "brlunicode": "⠲⠛⠥⠌⠬"
+  },
+  {
+    "id": 1374,
+    "print": "doors",
+    "brlunicode": "⠙⠕⠕⠗⠎"
+  },
+  {
+    "id": 1375,
+    "print": "dreams",
+    "brlunicode": "⠙⠗⠂⠍⠎"
+  },
+  {
+    "id": 1376,
+    "print": "drinks",
+    "brlunicode": "⠙⠗⠔⠅⠎"
+  },
+  {
+    "id": 1377,
+    "print": "drugs",
+    "brlunicode": "⠙⠗⠥⠛⠎"
+  },
+  {
+    "id": 1378,
+    "print": "everyone",
+    "brlunicode": "⠐⠑⠽⠐⠕"
+  },
+  {
+    "id": 1379,
+    "print": "everything",
+    "brlunicode": "⠐⠑⠽⠹⠬"
+  },
+  {
+    "id": 1380,
+    "print": "faces",
+    "brlunicode": "⠋⠁⠉⠑⠎"
+  },
+  {
+    "id": 1381,
+    "print": "feels",
+    "brlunicode": "⠋⠑⠑⠇⠎"
+  },
+  {
+    "id": 1382,
+    "print": "flowers",
+    "brlunicode": "⠋⠇⠪⠻⠎"
+  },
+  {
+    "id": 1383,
+    "print": "forgive",
+    "brlunicode": "⠿⠛⠊⠧⠑"
+  },
+  {
+    "id": 1384,
+    "print": "fortune",
+    "brlunicode": "⠿⠞⠥⠝⠑"
+  },
+  {
+    "id": 1385,
+    "print": "games",
+    "brlunicode": "⠛⠁⠍⠑⠎"
+  },
+  {
+    "id": 1386,
+    "print": "gasps",
+    "brlunicode": "⠛⠁⠎⠏⠎"
+  },
+  {
+    "id": 1387,
+    "print": "girls",
+    "brlunicode": "⠛⠊⠗⠇⠎"
+  },
+  {
+    "id": 1388,
+    "print": "gives",
+    "brlunicode": "⠛⠊⠧⠑⠎"
+  },
+  {
+    "id": 1389,
+    "print": "gonna",
+    "brlunicode": "⠛⠕⠝⠝⠁"
+  },
+  {
+    "id": 1390,
+    "print": "goodbye",
+    "brlunicode": "⠛⠙⠃⠽⠑"
+  },
+  {
+    "id": 1391,
+    "print": "gotta",
+    "brlunicode": "⠛⠕⠞⠞⠁"
+  },
+  {
+    "id": 1392,
+    "print": "grandfather",
+    "brlunicode": "⠛⠗⠯⠐⠋"
+  },
+  {
+    "id": 1393,
+    "print": "grandma",
+    "brlunicode": "⠛⠗⠯⠍⠁"
+  },
+  {
+    "id": 1394,
+    "print": "grandmother",
+    "brlunicode": "⠛⠗⠯⠐⠍"
+  },
+  {
+    "id": 1395,
+    "print": "grandpa",
+    "brlunicode": "⠛⠗⠯⠏⠁"
+  },
+  {
+    "id": 1396,
+    "print": "guards",
+    "brlunicode": "⠛⠥⠜⠙⠎"
+  },
+  {
+    "id": 1397,
+    "print": "guests",
+    "brlunicode": "⠛⠥⠑⠌⠎"
+  },
+  {
+    "id": 1398,
+    "print": "honour",
+    "brlunicode": "⠓⠕⠝⠳⠗"
+  },
+  {
+    "id": 1399,
+    "print": "hurry",
+    "brlunicode": "⠓⠥⠗⠗⠽"
+  },
+  {
+    "id": 1400,
+    "print": "hurts",
+    "brlunicode": "⠓⠥⠗⠞⠎"
+  },
+  {
+    "id": 1401,
+    "print": "idiot",
+    "brlunicode": "⠊⠙⠊⠕⠞"
+  },
+  {
+    "id": 1402,
+    "print": "insane",
+    "brlunicode": "⠔⠎⠁⠝⠑"
+  },
+  {
+    "id": 1403,
+    "print": "jealous",
+    "brlunicode": "⠚⠂⠇⠳⠎"
+  },
+  {
+    "id": 1404,
+    "print": "keeps",
+    "brlunicode": "⠅⠑⠑⠏⠎"
+  },
+  {
+    "id": 1405,
+    "print": "kicked",
+    "brlunicode": "⠅⠊⠉⠅⠫"
+  },
+  {
+    "id": 1406,
+    "print": "kidding",
+    "brlunicode": "⠅⠊⠙⠙⠬"
+  },
+  {
+    "id": 1407,
+    "print": "laughs",
+    "brlunicode": "⠇⠁⠥⠣⠎"
+  },
+  {
+    "id": 1408,
+    "print": "leaves",
+    "brlunicode": "⠇⠂⠧⠑⠎"
+  },
+  {
+    "id": 1409,
+    "print": "lights",
+    "brlunicode": "⠇⠊⠣⠞⠎"
+  },
+  {
+    "id": 1410,
+    "print": "likes",
+    "brlunicode": "⠇⠊⠅⠑⠎"
+  },
+  {
+    "id": 1411,
+    "print": "lives",
+    "brlunicode": "⠇⠊⠧⠑⠎"
+  },
+  {
+    "id": 1412,
+    "print": "looks",
+    "brlunicode": "⠇⠕⠕⠅⠎"
+  },
+  {
+    "id": 1413,
+    "print": "loves",
+    "brlunicode": "⠇⠕⠧⠑⠎"
+  },
+  {
+    "id": 1414,
+    "print": "madam",
+    "brlunicode": "⠍⠁⠙⠁⠍"
+  },
+  {
+    "id": 1415,
+    "print": "makes",
+    "brlunicode": "⠍⠁⠅⠑⠎"
+  },
+  {
+    "id": 1416,
+    "print": "mayor",
+    "brlunicode": "⠍⠁⠽⠕⠗"
+  },
+  {
+    "id": 1417,
+    "print": "months",
+    "brlunicode": "⠍⠕⠝⠹⠎"
+  },
+  {
+    "id": 1418,
+    "print": "moves",
+    "brlunicode": "⠍⠕⠧⠑⠎"
+  },
+  {
+    "id": 1419,
+    "print": "nights",
+    "brlunicode": "⠝⠊⠣⠞⠎"
+  },
+  {
+    "id": 1420,
+    "print": "notes",
+    "brlunicode": "⠝⠕⠞⠑⠎"
+  },
+  {
+    "id": 1421,
+    "print": "orders",
+    "brlunicode": "⠕⠗⠙⠻⠎"
+  },
+  {
+    "id": 1422,
+    "print": "panting",
+    "brlunicode": "⠏⠁⠝⠞⠬"
+  },
+  {
+    "id": 1423,
+    "print": "pardon",
+    "brlunicode": "⠏⠜⠙⠕⠝"
+  },
+  {
+    "id": 1424,
+    "print": "parents",
+    "brlunicode": "⠏⠜⠢⠞⠎"
+  },
+  {
+    "id": 1425,
+    "print": "pills",
+    "brlunicode": "⠏⠊⠇⠇⠎"
+  },
+  {
+    "id": 1426,
+    "print": "plans",
+    "brlunicode": "⠏⠇⠁⠝⠎"
+  },
+  {
+    "id": 1427,
+    "print": "plays",
+    "brlunicode": "⠏⠇⠁⠽⠎"
+  },
+  {
+    "id": 1428,
+    "print": "points",
+    "brlunicode": "⠏⠕⠔⠞⠎"
+  },
+  {
+    "id": 1429,
+    "print": "price",
+    "brlunicode": "⠏⠗⠊⠉⠑"
+  },
+  {
+    "id": 1430,
+    "print": "rules",
+    "brlunicode": "⠗⠥⠇⠑⠎"
+  },
+  {
+    "id": 1431,
+    "print": "scoffs",
+    "brlunicode": "⠎⠉⠷⠋⠎"
+  },
+  {
+    "id": 1432,
+    "print": "scream",
+    "brlunicode": "⠎⠉⠗⠂⠍"
+  },
+  {
+    "id": 1433,
+    "print": "sisters",
+    "brlunicode": "⠎⠊⠌⠻⠎"
+  },
+  {
+    "id": 1434,
+    "print": "slept",
+    "brlunicode": "⠎⠇⠑⠏⠞"
+  },
+  {
+    "id": 1435,
+    "print": "sooner",
+    "brlunicode": "⠎⠕⠕⠝⠻"
+  },
+  {
+    "id": 1436,
+    "print": "states",
+    "brlunicode": "⠌⠁⠞⠑⠎"
+  },
+  {
+    "id": 1437,
+    "print": "takes",
+    "brlunicode": "⠞⠁⠅⠑⠎"
+  },
+  {
+    "id": 1438,
+    "print": "tells",
+    "brlunicode": "⠞⠑⠇⠇⠎"
+  },
+  {
+    "id": 1439,
+    "print": "thousands",
+    "brlunicode": "⠹⠳⠎⠯⠎"
+  },
+  {
+    "id": 1440,
+    "print": "tires",
+    "brlunicode": "⠞⠊⠗⠑⠎"
+  },
+  {
+    "id": 1441,
+    "print": "towards",
+    "brlunicode": "⠞⠪⠜⠙⠎"
+  },
+  {
+    "id": 1442,
+    "print": "trees",
+    "brlunicode": "⠞⠗⠑⠑⠎"
+  },
+  {
+    "id": 1443,
+    "print": "turns",
+    "brlunicode": "⠞⠥⠗⠝⠎"
+  },
+  {
+    "id": 1444,
+    "print": "until",
+    "brlunicode": "⠥⠝⠞⠊⠇"
+  },
+  {
+    "id": 1445,
+    "print": "useless",
+    "brlunicode": "⠥⠎⠑⠨⠎"
+  },
+  {
+    "id": 1446,
+    "print": "waited",
+    "brlunicode": "⠺⠁⠊⠞⠫"
+  },
+  {
+    "id": 1447,
+    "print": "walls",
+    "brlunicode": "⠺⠁⠇⠇⠎"
+  },
+  {
+    "id": 1448,
+    "print": "wanna",
+    "brlunicode": "⠺⠁⠝⠝⠁"
+  },
+  {
+    "id": 1449,
+    "print": "wants",
+    "brlunicode": "⠺⠁⠝⠞⠎"
+  },
+  {
+    "id": 1450,
+    "print": "weeks",
+    "brlunicode": "⠺⠑⠑⠅⠎"
+  },
+  {
+    "id": 1451,
+    "print": "yelling",
+    "brlunicode": "⠽⠑⠇⠇⠬"
   }
 ]
