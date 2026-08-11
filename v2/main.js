@@ -3,6 +3,8 @@
 const MAX_GUESSES = 6;
 const START_DATE_MS = 1774396800000; // Day 0 = 2026-03-25
 const STORAGE_KEY = "contractable_game_state";
+const SUGGEST_FORMSPREE_URL = "https://formspree.io/f/mwvdgkyj";
+const SUGGEST_MIN_WORD_LENGTH = 5;
 
 let WORD_OF_THE_DAY = null; // Stored as a complete object: { id, print, brlunicode }
 let allWords = [];          // Array of objects from daily-word4.json
@@ -365,6 +367,92 @@ function submitSixKeyGuess() {
   }
 }
 
+/* ── Post-Game Word Suggestions ───────────────────────────────────────────── */
+
+function showPostGameSuggestForm() {
+  const suggestSection = document.getElementById("post-game-suggest");
+  if (suggestSection) suggestSection.hidden = false;
+}
+
+function hidePostGameSuggestForm() {
+  const suggestSection = document.getElementById("post-game-suggest");
+  const input = document.getElementById("suggest-input");
+  const feedback = document.getElementById("suggest-feedback");
+  if (suggestSection) suggestSection.hidden = true;
+  if (input) input.value = "";
+  if (feedback) feedback.textContent = "";
+}
+
+function setSuggestFeedback(msg) {
+  const feedback = document.getElementById("suggest-feedback");
+  if (feedback) feedback.textContent = msg;
+}
+
+// Splits the textarea contents on whitespace/line breaks and keeps only
+// candidates that look like plausible words: letters only, 5+ characters.
+// Returns a de-duplicated array of lowercase words.
+function parseSuggestedWords(rawText) {
+  const candidates = rawText.split(/[\s,]+/).map(w => w.trim()).filter(Boolean);
+  const seen = new Set();
+  const valid = [];
+  for (const word of candidates) {
+    const lower = word.toLowerCase();
+    if (!/^[a-z]+$/.test(lower)) continue;
+    if (lower.length < SUGGEST_MIN_WORD_LENGTH) continue;
+    if (seen.has(lower)) continue;
+    seen.add(lower);
+    valid.push(lower);
+  }
+  return valid;
+}
+
+async function submitWordSuggestions() {
+  const input = document.getElementById("suggest-input");
+  const submitBtn = document.getElementById("suggest-submit-btn");
+  if (!input) return;
+
+  const words = parseSuggestedWords(input.value);
+  if (words.length === 0) {
+    setSuggestFeedback("Enter at least one word, letters only, 5 or more characters.");
+    return;
+  }
+
+  if (submitBtn) submitBtn.disabled = true;
+  setSuggestFeedback("Sending\u2026");
+
+  // Formspree requires FormData (not a JSON body) or the request is blocked
+  // by a CORS preflight failure before it ever reaches the endpoint.
+  const formData = new FormData();
+  formData.append("words", words.join(" "));
+  formData.append("wordCount", String(words.length));
+  formData.append("source", "contractable v2 six-key/standard board");
+  if (WORD_OF_THE_DAY) formData.append("todaysWord", WORD_OF_THE_DAY.print);
+
+  try {
+    const response = await fetch(SUGGEST_FORMSPREE_URL, {
+      method: "POST",
+      body: formData,
+      headers: { "Accept": "application/json" }
+    });
+
+    if (response.ok) {
+      setSuggestFeedback(
+        words.length === 1
+          ? "Thanks! Your word suggestion was sent."
+          : `Thanks! ${words.length} word suggestions were sent.`
+      );
+      input.value = "";
+    } else {
+      setSuggestFeedback("Something went wrong sending that. Please try again.");
+    }
+  } catch (e) {
+    setSuggestFeedback("Network error — please try again.");
+    mobileLog("Suggestion Submit Error: " + e.message);
+  } finally {
+    if (submitBtn) submitBtn.disabled = false;
+  }
+}
+
 /* ── State Persistence Management ─────────────────────────────────────────── */
 
 function saveGameState(rawGuessesArray) {
@@ -472,9 +560,8 @@ function resetGameForNewDay(nowDayIndex) {
     status.textContent = "";
   }
 
-  // Hide the post-game suggestion form again
-  const suggestSection = document.getElementById("post-game-suggest");
-  if (suggestSection) suggestSection.hidden = true;
+  // Hide the post-game suggestion form again, clearing any typed-but-unsent input
+  hidePostGameSuggestForm();
 
   // Re-enable controls and clear any leftover input
   const input = document.getElementById("guess-input");
@@ -613,10 +700,12 @@ function evaluateAndRenderGuess(rawGuess, isRestoring = false) {
   if (isMatch) {
     setStatus(WIN_STATUS_MESSAGE);
     gameOver = true;
+    showPostGameSuggestForm();
     if (!isRestoring) lockControls();
   } else if (currentGuess >= MAX_GUESSES) {
     setStatus(LOSE_STATUS_MESSAGE);
     gameOver = true;
+    showPostGameSuggestForm();
     if (!isRestoring) lockControls();
   }
 
@@ -717,6 +806,11 @@ async function init() {
   }
   if (sixkeySubmitBtn) {
     sixkeySubmitBtn.addEventListener("click", submitSixKeyGuess);
+  }
+
+  const suggestSubmitBtn = document.getElementById("suggest-submit-btn");
+  if (suggestSubmitBtn) {
+    suggestSubmitBtn.addEventListener("click", submitWordSuggestions);
   }
 
   applyInputMode();
