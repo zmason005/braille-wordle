@@ -266,12 +266,11 @@
 
     #sixkey-cells {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      gap: 0.5em;
-      flex-wrap: nowrap;
-      padding: 0.5em;
-      border-radius: 0.4em;
+      gap: 1vw;
+      width: 100%;
+      padding: 0.4em 0;
     }
 
     #sixkey-cells:focus {
@@ -283,6 +282,8 @@
        1 4
        2 5
        3 6
+       Sized as a fraction of the row's width (not fixed px) so all 5 cells
+       stay visible and tappable on narrow phones without horizontal scrolling.
     */
     .cell {
       display: grid;
@@ -292,8 +293,10 @@
         "d1 d4"
         "d2 d5"
         "d3 d6";
-      gap: 0.14em 0.18em;
-      padding: 0.2em;
+      gap: 1vw 1vw;
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 0.08em;
       border-radius: 0.3em;
     }
 
@@ -303,8 +306,8 @@
     }
 
     .dot {
-      width: 44px;
-      height: 44px;
+      width: 100%;
+      aspect-ratio: 1 / 1;
       border-radius: 50%;
       background-color: #000000;
       border: 0.09em solid #ffffff;
