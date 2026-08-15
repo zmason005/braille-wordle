@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>R2 Direct Upload Test</title>
+  <style>
+    :root {
+      --bg: #000000;
+      --card-bg: #121212;
+      --gold: #f5c518;
+      --text: #ffffff;
+      --text-muted: #a0a0a0;
+      --border: #2a2a2a;
+      --error: #ff5555;
+      --success: #55ff55;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      color: var(--gold);
+      font-size: 1.4rem;
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.4;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--gold);
+    }
+
+    input[type="text"],
+    input[type="file"] {
+      width: 100%;
+      padding: 12px;
+      background-color: #1a1a1a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.95rem;
+      box-sizing: border-box;
+    }
+
+    input[type="file"] {
+      padding: 8px;
+    }
+
+    button {
+      width: 100%;
+      background-color: var(--gold);
+      color: #000000;
+      border: none;
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: opacity 0.2s;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #status {
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      word-break: break-all;
+      white-space: pre-wrap;
+      display: none;
+    }
+
+    .status-success {
+      background-color: rgba(85, 255, 85, 0.1);
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+
+    .status-error {
+      background-color: rgba(255, 85, 85, 0.1);
+      border: 1px solid var(--error);
+      color: var(--error);
+    }
+
+    .status-info {
+      background-color: rgba(245, 197, 24, 0.1);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+    }
+  </style>
+</head>
+<body>
+
+  <main class="container">
+    <h1>R2 Upload Diagnostics</h1>
+    <p>Upload test utility for Cloudflare R2 pipeline via Supabase Edge Function.</p>
+
+    <form id="uploadForm">
+      <div class="form-group">
+        <label for="functionUrl">Edge Function URL</label>
+        <input 
+          type="text" 
+          id="functionUrl" 
+          placeholder="https://<project-ref>.supabase.co/functions/v1/upload-to-r2" 
+          required 
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="anonKey">Supabase Anon Key (Optional)</label>
+        <input 
+          type="text" 
+          id="anonKey" 
+          placeholder="eyJhbGciOiJIUzI1Ni..." 
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="fileInput">Select File</label>
+        <input type="file" id="fileInput" required />
+      </div>
+
+      <button type="submit" id="submitBtn">Execute Upload</button>
+    </form>
+
+    <div id="status" aria-live="polite"></div>
+  </main>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const statusDiv = document.getElementById('status');
+
+    // Load cached endpoint details if available
+    document.getElementById('functionUrl').value = localStorage.getItem('r2_test_url') || '';
+    document.getElementById('anonKey').value = localStorage.getItem('r2_test_key') || '';
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const functionUrl = document.getElementById('functionUrl').value.trim();
+      const anonKey = document.getElementById('anonKey').value.trim();
+      const fileInput = document.getElementById('fileInput');
+
+      if (!fileInput.files.length) {
+        showStatus('Please select a file to upload.', 'error');
+        return;
+      }
+
+      // Cache values for convenience on iOS
+      localStorage.setItem('r2_test_url', functionUrl);
+      localStorage.setItem('r2_test_key', anonKey);
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append('file', file);
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Uploading...';
+      showStatus('Dispatching request to Edge Function...', 'info');
+
+      try {
+        const headers = {};
+        if (anonKey) {
+          headers['Authorization'] = `Bearer ${anonKey}`;
+          headers['apikey'] = anonKey;
+        }
+
+        const response = await fetch(functionUrl, {
+          method: 'POST',
+          headers: headers,
+          body: formData
+        });
+
+        const rawText = await response.text();
+        let parsedData;
+
+        try {
+          parsedData = JSON.parse(rawText);
+        } catch (_) {
+          parsedData = rawText;
+        }
+
+        if (response.ok) {
+          showStatus(
+            `SUCCESS (${response.status})\n\n` + 
+            JSON.stringify(parsedData, null, 2), 
+            'success'
+          );
+        } else {
+          showStatus(
+            `FAILED (${response.status})\n\n` + 
+            (typeof parsedData === 'object' ? JSON.stringify(parsedData, null, 2) : parsedData), 
+            'error'
+          );
+        }
+      } catch (err) {
+        showStatus(`NETWORK ERROR:\n${err.message}`, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Execute Upload';
+      }
+    });
+
+    function showStatus(message, type) {
+      statusDiv.style.display = 'block';
+      statusDiv.className = `status-${type}`;
+      statusDiv.textContent = message;
+    }
+  </script>
+</body>
+</html>
