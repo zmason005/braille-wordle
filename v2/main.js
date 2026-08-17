@@ -719,18 +719,65 @@ function formatRow({ guessIndex, correct, guess, wrong }) {
   return `${label}\u2800${correct}\u2800${guess}\u2800${wrong}`;
 }
 
+// Source braille strings for the two generated label contexts. These match
+// (and must stay in sync with) the aria-label/aria-braillelabel attributes
+// already present on #header and the h1 in index.html — those attributes
+// remain the source of truth for assistive tech; these constants only drive
+// the aria-hidden visual nested-span markup.
+const HEADER_BRAILLE = "⠉⠕⠗⠗⠑⠉⠞⠀⠛⠥⠑⠎⠎⠀⠺⠗⠰⠛"; // "correct guess wrong"
+const HEADING_BRAILLE = "⠠⠠⠒⠞⠗⠁⠉⠞⠁⠃⠇⠑";           // "CONTRACTABLE"
+
+// Rebuilds the board header ("correct guess wrong") using the same nested
+// span.cell > span.dot structure as guess rows, so the three columns line
+// up under the correct/guess/wrong groups of every row below it. Unraised
+// dots use the "dot-label" modifier (fully invisible) since this is a
+// label, not an interactive/readable board row.
+function buildHeaderCells() {
+  const header = document.getElementById("header");
+  if (!header) return;
+
+  header.innerHTML = "";
+
+  const rowLabel = document.createElement("span");
+  rowLabel.className = "row-label";
+  rowLabel.setAttribute("aria-hidden", "true");
+  header.appendChild(rowLabel);
+
+  const [correctWord, guessWord, wrongWord] = HEADER_BRAILLE.split("\u2800");
+
+  header.appendChild(buildRowGroup(unicodeStringToBitmasks(correctWord), "row-group-correct", "dot-label"));
+  header.appendChild(buildRowGroup(unicodeStringToBitmasks(guessWord), "row-group-guess", "dot-label"));
+  header.appendChild(buildRowGroup(unicodeStringToBitmasks(wrongWord), "row-group-wrong", "dot-label"));
+}
+
+// Rebuilds the "CONTRACTABLE" h1 using the same nested-span structure,
+// scaled in em via #heading-cells' own CSS rather than the board's vw
+// sizing. Also uses the "dot-label" modifier for invisible unraised dots.
+function buildHeadingCells() {
+  const container = document.getElementById("heading-cells");
+  if (!container) return;
+
+  container.innerHTML = "";
+  unicodeStringToBitmasks(HEADING_BRAILLE).forEach(bm => {
+    container.appendChild(buildCellSpan(bm, "dot-label"));
+  });
+}
+
 // Builds one visual braille cell (span.cell > 6x span.dot.dot-N[.on]) from an
 // 8-bit bitmask string in the same position convention as brlunicode-mapping.json
 // (see BITMASK_DOT_ORDER above for the position-to-dot-number mapping). Purely
 // visual/decorative — the row's aria-braillelabel remains the source of truth
 // for assistive tech, so these cells don't need their own ARIA attributes.
-function buildCellSpan(bitmaskStr) {
+// extraDotClass is optional — pass "dot-label" for label contexts (heading,
+// board header) where unraised dots should be fully invisible rather than
+// the normal dark-red unraised-dot styling used on the board/six-key widget.
+function buildCellSpan(bitmaskStr, extraDotClass) {
   const cell = document.createElement("span");
   cell.className = "cell";
   for (let dotNum = 1; dotNum <= 6; dotNum++) {
     const position = BITMASK_DOT_ORDER.indexOf(dotNum);
     const dot = document.createElement("span");
-    dot.className = "dot dot-" + dotNum;
+    dot.className = "dot dot-" + dotNum + (extraDotClass ? " " + extraDotClass : "");
     if (bitmaskStr && position !== -1 && bitmaskStr[position] === "1") {
       dot.classList.add("on");
     }
@@ -739,14 +786,24 @@ function buildCellSpan(bitmaskStr) {
   return cell;
 }
 
-// Builds one aria-hidden group of 5 cells (e.g. the "guess" column) from an
-// array of 8-bit bitmask strings.
-function buildRowGroup(bitmaskArray, groupClass) {
+// Builds one aria-hidden group of cells (e.g. the "guess" column) from an
+// array of 8-bit bitmask strings. extraDotClass is forwarded to buildCellSpan.
+function buildRowGroup(bitmaskArray, groupClass, extraDotClass) {
   const group = document.createElement("span");
   group.className = "row-group " + groupClass;
   group.setAttribute("aria-hidden", "true");
-  bitmaskArray.forEach(bm => group.appendChild(buildCellSpan(bm)));
+  bitmaskArray.forEach(bm => group.appendChild(buildCellSpan(bm, extraDotClass)));
   return group;
+}
+
+// Converts a string of Unicode braille characters into an array of 8-bit
+// bitmask strings, looked up the same way guesses/targets already are.
+function unicodeStringToBitmasks(str) {
+  const out = [];
+  for (const ch of str) {
+    out.push(asciiToDots[ch] || "00000000");
+  }
+  return out;
 }
 
 function renderRow({ guessIndex, ariaBrailleLabel, correctBitmasks, guessBitmasks, wrongBitmasks }) {
@@ -902,6 +959,9 @@ function submitGuess() {
 
 async function init() {
   await Promise.all([loadMapping(), loadDailyWords()]);
+
+  buildHeadingCells();
+  buildHeaderCells();
 
   if (allWords.length > 0) {
     activeDayIndex = todayDayIndex();
