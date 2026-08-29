@@ -5,41 +5,57 @@
   <title>Contractable</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    /* Prevent arbitrary text zooming mechanics in iOS Safari */
+    /*
+      CONTRACTABLE BOARD GEOMETRY
+      ---------------------------
+      The game board uses 24 Braille character pitches as its horizontal
+      design coordinate system.
+
+      A pitch is 1/24 of the available board width. Every horizontal
+      measurement is derived from that master pitch rather than from
+      independent vw values. This keeps the Braille geometry proportional
+      as the viewport changes.
+
+      The board itself contains:
+        1 pitch  row ID
+        5 pitches CORRECT
+        1 pitch  separator
+        5 pitches GUESS
+        1 pitch  separator
+        5 pitches WRONG
+
+      The CORRECT heading therefore spans the row ID + five Correct cells.
+    */
+
     html {
       -webkit-text-size-adjust: 100%;
       text-size-adjust: 100%;
-      /* Dynamic fluid baseline: scales smoothly with viewports */
-      font-size: calc(0.9rem + 0.3vw);
       box-sizing: border-box;
     }
 
-    *, *:before, *:after {
+    *, *::before, *::after {
       box-sizing: inherit;
     }
 
-    /* Global Page Canvas Layout */
     body {
       font-family: "Apple Braille", "Courier New", monospace;
-      padding: 1.5vh 3vw;
-      background-color: #000000;
+      background: #000000;
       color: #ffffff;
       margin: 0;
+      padding: 1.5vh 3vw;
       width: 100%;
     }
 
-    /* THE MASTER APP CONTAINER */
     .app-container {
       width: 100%;
-      max-width: 32ch;
+      max-width: 32rem;
       margin: 0 auto;
       font-size: clamp(1.3rem, 5vw, 1.75rem);
       text-align: center;
     }
 
     h1 {
-      margin-top: 0.5em;
-      margin-bottom: 0.5em;
+      margin: 0.5em 0;
       font-size: 1.2em;
     }
 
@@ -54,7 +70,6 @@
       outline: none;
     }
 
-    /* Inline "click to suggest" link */
     .suggest-link-btn {
       background: none;
       border: none;
@@ -67,7 +82,6 @@
       cursor: pointer;
       padding: 0;
       margin-left: 0.4em;
-      vertical-align: baseline;
     }
 
     .suggest-link-btn:hover {
@@ -81,106 +95,98 @@
     }
 
     /* ================================================================
-       GAME BOARD GEOMETRY
-
-       The board has three equal five-cell columns:
-
-         CORRECT | GUESS | WRONG
-         --------+-------+------
-         row id  |       |
-
-       The row label belongs to the CORRECT column. Therefore the
-       CORRECT header is centered over the row label plus the five
-       Correct cells.
-
-       All three game columns use the same calculated width so the
-       headers and every game row share exactly the same horizontal
-       geometry.
+       MASTER BRAILLE PITCH SYSTEM
        ================================================================ */
 
     #game-board {
-      /* Board geometry variables */
-      --board-cell-size: 2vw;
-      --board-dot-gap: 0.4vw;
-      --board-cell-gap: 1.4vw;
+      /*
+        One pitch = 1/24 of the board width.
+        All board geometry below is derived from this value.
+      */
+      --pitch: calc(100% / 24);
 
-      /* Width of five Braille cells plus the four spaces between them */
-      --board-column-width:
-        calc(
-          (5 * (2 * var(--board-cell-size) + var(--board-dot-gap)))
-          + (4 * var(--board-cell-gap))
-        );
+      /*
+        Proportions derived from the established Braille-cell geometry.
+        The exact physical size therefore changes with the screen, while
+        the proportions inside and between cells remain constant.
+      */
+      --dot-size: calc(var(--pitch) * 0.30);
+      --dot-column-gap: calc(var(--pitch) * 0.10);
+      --dot-row-gap: calc(var(--pitch) * 0.12);
+
+      /* One complete Braille character pitch. */
+      --cell-width: var(--pitch);
+
+      /*
+        A Braille cell's height is derived from its horizontal pitch rather
+        than independently scaled with vh.
+      */
+      --cell-height: calc(var(--cell-width) * 1.60);
+
+      /* One pitch separates the three five-cell groups. */
+      --group-gap: var(--pitch);
+
+      /*
+        First column = one row-ID pitch + five Correct-cell pitches.
+        The remaining two columns are five cells each.
+      */
+      --correct-column-width: calc(6 * var(--pitch));
+      --word-column-width: calc(5 * var(--pitch));
 
       margin-top: 1em;
+      width: 100%;
       display: flex;
       flex-direction: column;
       gap: 0.15em;
+      padding: 0.1em 0;
       font-variant-numeric: tabular-nums;
       letter-spacing: 0;
-      padding: 0.1em 0;
-      width: 100%;
-      text-align: center;
     }
 
-    /*
-      Every board row uses the same three-column geometry.
-
-      Column 1 is intentionally wider because it contains the row ID
-      plus the five Correct cells. This makes the CORRECT heading sit
-      over the row ID and Correct cells together.
-
-      Columns 2 and 3 are exactly the width of one five-cell group.
-    */
-    .row {
+    .row,
+    #header {
       display: grid;
       grid-template-columns:
-        calc(3.5vw + var(--board-column-width))
-        var(--board-column-width)
-        var(--board-column-width);
-      column-gap: 2.5vw;
+        var(--correct-column-width)
+        var(--word-column-width)
+        var(--word-column-width);
+      column-gap: var(--group-gap);
+      width: max-content;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
       align-items: center;
       justify-content: center;
-      flex-wrap: nowrap;
       outline: none;
-      margin-bottom: 1vh;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
     }
 
-    /*
-      The row label is part of the first grid column rather than a
-      separate spacing element. This allows CORRECT to align over both
-      the label and its five-cell group.
-    */
+    .row {
+      margin-bottom: 1vh;
+    }
+
     .row-label {
+      width: var(--pitch);
+      min-width: var(--pitch);
+      height: var(--cell-height);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 0.6em;
       font-family: sans-serif;
       color: #999999;
-      flex-shrink: 0;
-      width: 3.5vw;
-      text-align: right;
-    }
-
-    .row-group {
-      display: flex;
-      width: var(--board-column-width);
-      min-width: var(--board-column-width);
-      gap: var(--board-cell-gap);
-      flex-shrink: 0;
-      justify-content: center;
     }
 
     /*
-      The first board group and row label occupy the first grid column.
-      This wrapper is expected to be created by main.js when rows are
-      rendered.
+      Main.js may render the row label and three groups as siblings.
+      The first group is positioned beside the row ID inside column 1.
     */
-    .row > .row-label {
+    .row-label {
       grid-column: 1;
     }
 
     .row > .row-group:nth-of-type(1) {
       grid-column: 1;
+      margin-left: var(--pitch);
     }
 
     .row > .row-group:nth-of-type(2) {
@@ -191,43 +197,31 @@
       grid-column: 3;
     }
 
-    /*
-      Header geometry.
-
-      The header uses the same three-column structure as the game rows.
-      CORRECT therefore occupies the entire first column, including the
-      row-ID area, while GUESS and WRONG occupy their corresponding
-      five-cell columns.
-    */
-    #header {
-      display: grid;
-      grid-template-columns:
-        calc(3.5vw + var(--board-column-width))
-        var(--board-column-width)
-        var(--board-column-width);
-      column-gap: 2.5vw;
-      align-items: center;
-      justify-content: center;
-      width: max-content;
-      max-width: 100%;
-      margin-left: auto;
-      margin-right: auto;
+    .row-group {
+      display: flex;
+      width: var(--word-column-width);
+      min-width: var(--word-column-width);
+      gap: 0;
+      justify-content: flex-start;
+      flex-shrink: 0;
     }
 
-    #header .row-label {
-      grid-column: 1;
-      width: 100%;
-      text-align: center;
+    /*
+      Header geometry matches the rows exactly.
+      The first header occupies the entire six-pitch Correct column.
+    */
+    #header {
+      overflow: visible;
     }
 
     #header .row-group {
-      width: var(--board-column-width);
-      min-width: var(--board-column-width);
-      justify-content: center;
+      width: var(--word-column-width);
+      min-width: var(--word-column-width);
     }
 
     #header .row-group:nth-of-type(1) {
       grid-column: 1;
+      margin-left: var(--pitch);
     }
 
     #header .row-group:nth-of-type(2) {
@@ -236,6 +230,10 @@
 
     #header .row-group:nth-of-type(3) {
       grid-column: 3;
+    }
+
+    #header .row-label {
+      grid-column: 1;
     }
 
     #controls {
@@ -253,28 +251,36 @@
       font-family: monospace;
       width: 10ch;
       font-size: 1rem;
-      background-color: #000000;
+      background: #000000;
       color: #ffffff;
       border: 0.08rem solid #ffffff;
       padding: 0.4em;
       vertical-align: middle;
     }
 
-    #submit-btn {
+    #submit-btn,
+    #sixkey-submit-btn,
+    #suggest-submit-btn {
       font-family: sans-serif;
-      background-color: #000000;
+      background: #000000;
       color: #ffffff;
       border: 0.125rem solid #FFC107;
       padding: 0.3em 1em;
       font-weight: bold;
       cursor: pointer;
+      font-size: 1rem;
+    }
+
+    #submit-btn {
       font-size: 1.1rem;
       vertical-align: middle;
       margin-left: 0.4rem;
     }
 
-    #submit-btn:hover {
-      background-color: rgba(255, 193, 7, 0.15);
+    #submit-btn:hover,
+    #sixkey-submit-btn:hover,
+    #suggest-submit-btn:hover {
+      background: rgba(255, 193, 7, 0.15);
     }
 
     #post-game-suggest {
@@ -304,7 +310,7 @@
       max-width: 28ch;
       font-family: monospace;
       font-size: 1rem;
-      background-color: #000000;
+      background: #000000;
       color: #ffffff;
       border: 0.08rem solid #ffffff;
       padding: 0.5em;
@@ -314,18 +320,6 @@
     #suggest-submit-btn {
       display: block;
       margin: 0.6em auto 0;
-      font-family: sans-serif;
-      background-color: #000000;
-      color: #ffffff;
-      border: 0.125rem solid #FFC107;
-      padding: 0.3em 1em;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-
-    #suggest-submit-btn:hover {
-      background-color: rgba(255, 193, 7, 0.15);
     }
 
     #suggest-submit-btn:disabled {
@@ -374,7 +368,7 @@
 
     #mode-toggle-btn {
       font-family: sans-serif;
-      background-color: #000000;
+      background: #000000;
       color: #ffffff;
       border: 0.1rem solid #666666;
       padding: 0.35em 0.9em;
@@ -386,7 +380,101 @@
       border-color: #999999;
     }
 
-    /* ── SIX-KEY ENTRY WIDGET ──────────────────────────────── */
+    /* ================================================================
+       BRAILLE CELL
+       ================================================================ */
+
+    .cell {
+      display: grid;
+      grid-template-columns: repeat(2, var(--dot-size));
+      grid-template-rows: repeat(3, var(--dot-size));
+      column-gap: var(--dot-column-gap);
+      row-gap: var(--dot-row-gap);
+      grid-template-areas:
+        "d1 d4"
+        "d2 d5"
+        "d3 d6";
+      width: var(--cell-width);
+      min-width: var(--cell-width);
+      height: var(--cell-height);
+      align-content: center;
+      justify-content: center;
+      flex: 0 0 var(--cell-width);
+    }
+
+    .cell.current-cell {
+      outline: 0.15em solid #FFC107;
+      outline-offset: 0.1em;
+    }
+
+    .dot {
+      width: var(--dot-size);
+      height: var(--dot-size);
+      border-radius: 50%;
+      background: #8b0000;
+      border: 1px solid #8b0000;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .cell.tappable .dot {
+      cursor: pointer;
+    }
+
+    .dot.on {
+      background: #ffffff;
+      border-color: #ffffff;
+    }
+
+    .dot-label {
+      background: transparent;
+      border-color: transparent;
+    }
+
+    .dot-label.on {
+      background: #ffffff;
+      border-color: #ffffff;
+    }
+
+    .dot.dot-1 { grid-area: d1; }
+    .dot.dot-2 { grid-area: d2; }
+    .dot.dot-3 { grid-area: d3; }
+    .dot.dot-4 { grid-area: d4; }
+    .dot.dot-5 { grid-area: d5; }
+    .dot.dot-6 { grid-area: d6; }
+
+    /* ================================================================
+       HEADING
+       ================================================================ */
+
+    #heading-cells {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.3em;
+      vertical-align: middle;
+    }
+
+    #heading-cells .cell {
+      width: 0.8em;
+      min-width: 0.8em;
+      height: 1.28em;
+      grid-template-columns: repeat(2, 0.24em);
+      grid-template-rows: repeat(3, 0.24em);
+      column-gap: 0.08em;
+      row-gap: 0.09em;
+    }
+
+    #heading-cells .dot {
+      width: 0.24em;
+      height: 0.24em;
+      border-width: 0.05em;
+    }
+
+    /* ================================================================
+       SIX-KEY ENTRY
+       ================================================================ */
 
     #sixkey-controls {
       margin-top: 1.5em;
@@ -408,11 +496,16 @@
     }
 
     #sixkey-cells .cell {
-      gap: 1vw 1vw;
-      flex: 1 1 0;
+      width: auto;
       min-width: 0;
+      height: auto;
+      flex: 1 1 0;
       padding: 0.08em;
       border-radius: 0.3em;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      column-gap: 1vw;
+      row-gap: 1vw;
     }
 
     #sixkey-cells .dot {
@@ -422,91 +515,6 @@
       border: 0.09em solid #ffffff;
     }
 
-    /* One braille cell: 2 cols x 3 rows
-       1 4
-       2 5
-       3 6 */
-    .cell {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      grid-template-areas:
-        "d1 d4"
-        "d2 d5"
-        "d3 d6";
-      flex: 0 0 auto;
-    }
-
-    .cell.current-cell {
-      outline: 0.15em solid #FFC107;
-      outline-offset: 0.1em;
-    }
-
-    .dot {
-      border-radius: 50%;
-      background-color: #8b0000;
-      border: 1px solid #8b0000;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-    }
-
-    .cell.tappable .dot {
-      cursor: pointer;
-    }
-
-    .dot.on {
-      background-color: #ffffff;
-      border-color: #ffffff;
-    }
-
-    .dot-label {
-      background-color: transparent;
-      border-color: transparent;
-    }
-
-    .dot-label.on {
-      background-color: #ffffff;
-      border-color: #ffffff;
-    }
-
-    .dot.dot-1 { grid-area: d1; }
-    .dot.dot-2 { grid-area: d2; }
-    .dot.dot-3 { grid-area: d3; }
-    .dot.dot-4 { grid-area: d4; }
-    .dot.dot-5 { grid-area: d5; }
-    .dot.dot-6 { grid-area: d6; }
-
-    /* Board cells use the shared geometry variables */
-    #game-board .cell {
-      gap: var(--board-dot-gap) var(--board-dot-gap);
-    }
-
-    #game-board .dot {
-      width: var(--board-cell-size);
-      height: var(--board-cell-size);
-    }
-
-    /* ── HEADING (h1) NESTED-SPAN CELLS ───────────────────── */
-
-    #heading-cells {
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.3em;
-      vertical-align: middle;
-    }
-
-    #heading-cells .cell {
-      gap: 0.12em 0.12em;
-    }
-
-    #heading-cells .dot {
-      width: 0.5em;
-      height: 0.5em;
-      border-width: 0.05em;
-    }
-
     #sixkey-actions {
       margin-top: 1em;
       display: flex;
@@ -514,29 +522,19 @@
       gap: 0.6em;
     }
 
-    #sixkey-clear-btn,
-    #sixkey-submit-btn {
+    #sixkey-clear-btn {
       font-family: sans-serif;
-      background-color: #000000;
+      background: #000000;
       color: #ffffff;
-      border: 0.125rem solid #FFC107;
+      border: 0.125rem solid #666666;
       padding: 0.3em 1em;
-      font-weight: bold;
+      font-weight: normal;
       cursor: pointer;
       font-size: 1rem;
     }
 
-    #sixkey-clear-btn {
-      border-color: #666666;
-      font-weight: normal;
-    }
-
     #sixkey-clear-btn:hover {
       border-color: #999999;
-    }
-
-    #sixkey-submit-btn:hover {
-      background-color: rgba(255, 193, 7, 0.15);
     }
 
     #sixkey-clear-btn:disabled,
@@ -548,7 +546,6 @@
 </head>
 
 <body>
-
   <div class="app-container">
 
     <h1
@@ -559,7 +556,6 @@
     </h1>
 
     <div id="game-board" aria-live="polite">
-
       <div
         id="header"
         class="row"
@@ -567,16 +563,12 @@
         aria-label="correct, guess, wrong"
         aria-braillelabel="⠉⠕⠗⠗⠑⠉⠞⠀⠛⠥⠑⠎⠎⠀⠺⠗⠰⠛"
       ></div>
-
     </div>
 
     <div id="status" tabindex="-1" hidden></div>
 
     <div id="controls">
-
-      <label id="guess-label" for="guess-input" aria-hidden="true">
-        ⠛⠥⠑⠎⠎
-      </label>
+      <label id="guess-label" for="guess-input" aria-hidden="true">⠛⠥⠑⠎⠎</label>
 
       <input
         id="guess-input"
@@ -593,25 +585,19 @@
         aria-label="submit"
         aria-braillelabel="⠎⠥⠃⠍⠊⠞"
       >⠎⠥⠃⠍⠊⠞</button>
-
     </div>
 
     <div id="mode-toggle-wrap">
-      <button id="mode-toggle-btn" type="button">
-        Switch to 6-key entry
-      </button>
+      <button id="mode-toggle-btn" type="button">Switch to 6-key entry</button>
     </div>
 
-    <!-- Six-key braille entry -->
     <div id="sixkey-controls" hidden>
-
       <div
         id="sixkey-cells"
         role="group"
         aria-label="Six key braille entry, five cells. Hold S D F and J K L together to set dots, release to commit a cell. Tap or click dots directly. Arrow keys or Tab move between cells."
         tabindex="0"
       >
-
         <span class="cell tappable" data-cell="0">
           <span class="dot dot-1" data-cell="0" data-dot="1"></span>
           <span class="dot dot-2" data-cell="0" data-dot="2"></span>
@@ -656,7 +642,6 @@
           <span class="dot dot-5" data-cell="4" data-dot="5"></span>
           <span class="dot dot-6" data-cell="4" data-dot="6"></span>
         </span>
-
       </div>
 
       <div id="sixkey-live" class="sr-only" aria-live="polite"></div>
@@ -665,12 +650,9 @@
         <button id="sixkey-clear-btn" type="button">clear</button>
         <button id="sixkey-submit-btn" type="button">submit</button>
       </div>
-
     </div>
 
-    <!-- Post-game suggestion form -->
     <div id="post-game-suggest" hidden>
-
       <h2 id="suggest-heading">Suggest words for the game</h2>
 
       <label id="suggest-label" for="suggest-input">
@@ -688,23 +670,14 @@
         spellcheck="false"
       ></textarea>
 
-      <button id="suggest-submit-btn" type="button">
-        Send suggestions
-      </button>
+      <button id="suggest-submit-btn" type="button">Send suggestions</button>
 
-      <div
-        id="suggest-feedback"
-        role="status"
-        aria-live="polite"
-      ></div>
-
+      <div id="suggest-feedback" role="status" aria-live="polite"></div>
     </div>
 
     <div id="debug-log"></div>
-
   </div>
 
   <script src="main.js"></script>
-
 </body>
 </html>
