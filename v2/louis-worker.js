@@ -26,17 +26,27 @@
  * Two mirrors are tried in order (jsdelivr first, since it's a real CDN;
  * raw.githubusercontent.com as a fallback, since GitHub doesn't guarantee
  * raw.githubusercontent.com as a CDN for production traffic).
+ *
+ * easyapi is loaded from a LOCAL, PATCHED copy (easy-api-patched.js, next
+ * to this worker file), not the upstream CDN. Upstream's translateString()
+ * passes the input/output buffer's BYTE length where liblouis's C API
+ * expects a WIDECHAR (character) count, which on the UTF-32 build
+ * overstates lengths by 4x and causes liblouis to read/write past the
+ * actual buffer into adjacent WASM heap memory — producing corrupted
+ * translations for some words depending on what's sitting in nearby
+ * memory at call time. The compiled liblouis binary itself (`build`) is
+ * unaffected and still comes straight from the CDN.
  */
 
 const LIBLOUIS_SOURCES = [
   {
     build: "https://cdn.jsdelivr.net/gh/liblouis/js-build@master/build-no-tables-utf32.js",
-    easyapi: "https://cdn.jsdelivr.net/gh/liblouis/liblouis-js@master/easy-api.js",
+    easyapi: "easy-api-patched.js",
     tables: "https://cdn.jsdelivr.net/gh/liblouis/js-build@master/tables/"
   },
   {
     build: "https://raw.githubusercontent.com/liblouis/js-build/master/build-no-tables-utf32.js",
-    easyapi: "https://raw.githubusercontent.com/liblouis/liblouis-js/master/easy-api.js",
+    easyapi: "easy-api-patched.js",
     tables: "https://raw.githubusercontent.com/liblouis/js-build/master/tables/"
   }
 ];
