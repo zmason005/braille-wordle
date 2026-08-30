@@ -386,6 +386,15 @@ function getLouisWorker() {
     louisWorker = new Worker(LOUIS_WORKER_URL);
     louisWorker.onmessage = (evt) => {
       const data = evt.data || {};
+      if (data.log) {
+        // liblouis's own internal diagnostics (table load/compile errors,
+        // etc.), forwarded from the worker so they land in #debug-log --
+        // otherwise they're only visible in the worker's own devtools
+        // console, which most players (and testers without an attached
+        // inspector) have no way to see.
+        mobileLog("[liblouis " + (data.level || "LOG") + "] " + data.msg);
+        return;
+      }
       const pending = louisPending.get(data.id);
       if (!pending) return;
       louisPending.delete(data.id);

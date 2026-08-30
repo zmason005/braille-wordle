@@ -67,8 +67,39 @@ function bindDynLoader(self) {
 		var res;
 
 		if(/(\.cti|\.ctb|\.utb|\.dis|\.uti|\.tbl|\.dic)$/.test(name)) {
+			// PATCHED (contractable): fetch the WHOLE table file with a
+			// plain (non-Range) synchronous XHR and write it straight into
+			// the virtual filesystem, instead of createLazyFile's Range-
+			// request-based chunked reading. Some CDNs transparently
+			// gzip-compress responses; a gzip'd byte RANGE doesn't
+			// decompress correctly on its own, so createLazyFile's chunked
+			// reads were silently handing liblouis corrupted, misaligned
+			// table content -- which surfaced as "compile error at line N"
+			// failures on lines that are actually fine in the real file.
+			// A single full-body request sidesteps that: browsers
+			// transparently and correctly decompress a *complete* gzip
+			// response; it's only partial/ranged ones that break.
 			var url = self.capi.TABLE_URL + name;
-			res = self.capi.FS.createLazyFile(parent, name, url, true, true);
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', url, false);
+			// Classic trick for getting raw bytes out of a synchronous XHR's
+			// responseText: each character ends up holding one byte
+			// (0x00-0xFF), so no data is lost or transcoded as UTF-8/16.
+			xhr.overrideMimeType('text/plain; charset=x-user-defined');
+			xhr.send(null);
+
+			var bytes;
+			if(xhr.status >= 200 && xhr.status < 300) {
+				var text = xhr.responseText;
+				bytes = new Uint8Array(text.length);
+				for(var i = 0; i < text.length; i++) {
+					bytes[i] = text.charCodeAt(i) & 0xff;
+				}
+			} else {
+				bytes = new Uint8Array(0);
+			}
+
+			res = self.capi.FS.createDataFile(parent, name, bytes, true, true);
 		} else {
 			res = self.capi.FS.lookup.apply(this, [parent, name]);
 		}

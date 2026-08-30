@@ -57,6 +57,17 @@ const LIBLOUIS_TABLE_LIST = "unicode.dis,en-ueb-g2.ctb";
 let ready = false;
 let initError = null;
 
+// liblouis reports its own internal problems (unresolved table includes,
+// compile failures, etc.) through this log callback rather than throwing —
+// so a translateString() call can come back as a plain `null` with nothing
+// in the returned value to explain why. Those messages normally only reach
+// the worker's own devtools console, which is invisible without an
+// inspector attached. Forwarding them to the main thread means they show up
+// in the page's own #debug-log instead, no inspector needed.
+function forwardLiblouisLog(level, msg) {
+  self.postMessage({ log: true, level, msg });
+}
+
 function initLiblouis() {
   const errors = [];
   for (const source of LIBLOUIS_SOURCES) {
@@ -64,6 +75,8 @@ function initLiblouis() {
       importScripts(source.build);
       importScripts(source.easyapi);
       // `liblouis` is registered as a global by easy-api.js
+      // eslint-disable-next-line no-undef
+      liblouis.registerLogCallback(forwardLiblouisLog);
       // eslint-disable-next-line no-undef
       liblouis.enableOnDemandTableLoading(source.tables);
       ready = true;
@@ -94,6 +107,13 @@ self.onmessage = function (evt) {
       // Each translated braille cell is exactly one Unicode code point in
       // the U+2800-U+28FF block, so a code-point-aware length is the cell count.
       const cellCount = brl ? Array.from(brl).length : 0;
+      if (!brl) {
+        // translateString() itself failed for this word (returned null) --
+        // distinct from a real translation that just isn't 5 cells. Almost
+        // always caused by a table failing to load/compile; the actual
+        // reason will have already come through forwardLiblouisLog above.
+        forwardLiblouisLog("ERROR", "translateString returned null for: " + word);
+      }
       return { word: word, brl: brl, cellCount: cellCount };
     });
     self.postMessage({ id, ok: true, results });
