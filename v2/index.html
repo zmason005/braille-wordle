@@ -364,6 +364,44 @@
       border-color: #999999;
     }
 
+    #instructions-toggle-wrap {
+      margin: 0.3em 0 1em;
+    }
+
+    #instructions-btn {
+      font-family: sans-serif;
+      background: #000000;
+      color: #ffffff;
+      border: 0.1rem solid #666666;
+      padding: 0.35em 0.9em;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    #instructions-btn:hover {
+      border-color: #999999;
+    }
+
+    #instructions-panel {
+      text-align: left;
+      font-family: sans-serif;
+      font-size: 0.8em;
+      line-height: 1.4;
+      color: #dddddd;
+      background: rgba(255, 255, 255, 0.03);
+      border: 0.08rem solid #444444;
+      padding: 0.8em 1em;
+      margin: 0.6em 0 1.2em;
+    }
+
+    #instructions-panel p {
+      margin: 0 0 0.7em;
+    }
+
+    #instructions-panel p:last-child {
+      margin-bottom: 0;
+    }
+
     /* ================================================================
        BRAILLE CELL
        ================================================================ */
@@ -538,6 +576,26 @@
     >
       <span id="heading-cells" aria-hidden="true"></span>
     </h1>
+
+    <div id="instructions-toggle-wrap">
+      <button
+        id="instructions-btn"
+        type="button"
+        aria-expanded="false"
+        aria-controls="instructions-panel"
+      >Show Instructions</button>
+    </div>
+
+    <section id="instructions-panel" hidden aria-labelledby="instructions-btn">
+      <p>
+        Guess the daily Braille word in six tries. Enter a Braille word with
+        the correct number of cells, then use the feedback from each guess to
+        solve the puzzle. After every guess, only the correct dots in the
+        correct positions remain, while incorrect dots disappear. Correct
+        dots accumulate with each attempt, helping you uncover the answer.
+      </p>
+      <p><strong>Think in Braille dots&mdash;not letters.</strong></p>
+    </section>
 
     <div id="game-board" aria-live="polite">
       <div

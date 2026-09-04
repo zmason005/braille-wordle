@@ -979,6 +979,21 @@ function submitGuess() {
   }
 }
 
+// Wires the Show/Hide Instructions button. Purely additive: doesn't touch
+// input handling, guess evaluation, or any other game state.
+function initInstructionsToggle() {
+  const btn = document.getElementById("instructions-btn");
+  const panel = document.getElementById("instructions-panel");
+  if (!btn || !panel) return;
+
+  btn.addEventListener("click", () => {
+    const expanded = btn.getAttribute("aria-expanded") === "false";
+    panel.hidden = !expanded;
+    btn.setAttribute("aria-expanded", expanded);
+    btn.textContent = expanded ? "Hide Instructions" : "Show Instructions";
+  });
+}
+
 async function init() {
   await Promise.all([loadMapping(), loadDailyWords()]);
 
@@ -1044,6 +1059,8 @@ async function init() {
   if (suggestSubmitBtn) {
     suggestSubmitBtn.addEventListener("click", submitWordSuggestions);
   }
+
+  initInstructionsToggle();
 
   applyInputMode();
 
